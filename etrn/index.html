@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <title>ММЛ — прототип подписания титулов (ЭТрН)</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
@@ -11,15 +12,43 @@ body{margin:0}
 a{color:#00a5a9}a:hover{color:#008a8d}
 @keyframes pspin{to{transform:rotate(360deg)}}
 .pspin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:pspin .8s linear infinite}
-html,body{height:100%}
-body{background:#1f2328;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:Roboto,Arial,sans-serif}
-#frame{width:390px;height:844px;transform-origin:center center;box-shadow:0 10px 40px rgba(0,0,0,.5);border-radius:24px;overflow:hidden;background:#fff;flex-shrink:0}
-@media (max-width:500px){body{background:#fff}#frame{border-radius:0;box-shadow:none}}
+html,body{height:100%;margin:0}
+[data-scroll]>*{flex-shrink:0}
+body{background:#1f2328;font-family:Roboto,Arial,sans-serif;color:#e6e6e6}
+.shell{display:flex;height:100vh;align-items:center;justify-content:center;gap:48px;padding:24px;box-sizing:border-box}
+.side{width:300px;flex:none;font-size:14px;line-height:20px}
+.side h1{font-size:20px;line-height:26px;margin:0 0 12px;color:#fff;font-weight:500}
+.side ol{padding-left:18px;margin:0 0 16px}
+.side li{margin-bottom:8px}
+.side button{font:inherit;font-weight:500;color:#fff;background:#00a5a9;border:0;border-radius:4px;padding:10px 16px;cursor:pointer}
+.stage{width:390px;height:844px;flex:none;display:flex;align-items:center;justify-content:center}
+#frame{width:390px;height:844px;flex:none;transform-origin:center center;box-shadow:0 10px 40px rgba(0,0,0,.5);border-radius:24px;overflow:hidden;background:#fff;color:rgba(0,0,0,.87)}
+@media (max-width:760px){
+  html,body{overflow:hidden;overscroll-behavior:none;background:#fff}
+  .shell{display:block;padding:0;height:auto}
+  .side{display:none}
+  .stage{width:auto;height:auto}
+  #frame{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;border-radius:0;box-shadow:none;transform:none!important}
+}
 </style>
 </head>
 <body>
-<div id="frame"></div>
-<template id="tpl"><div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #ffffff; font-family: Roboto, Arial, sans-serif; color: rgba(0,0,0,0.87)">
+<div class="shell">
+  <div class="side">
+    <h1>ММЛ · подписание титулов (ЭТрН)</h1>
+    <ol>
+      <li>Маршрутный лист → оранжевая плашка → «Подписание ЭТрН».</li>
+      <li>Титул 2: галочка → «ПОДПИСАТЬ». Через ~5 с приходит «Подписан», плашки исчезают, у заданий появляются кнопки «QR-КОД».</li>
+      <li>«ЗАДАНИЯ · N» — список заданий титула.</li>
+      <li>Титул 4 текущего МЛ: первая попытка нарочно с ошибкой → «ПОВТОРИТЬ».</li>
+      <li>МЛ от 05.11 (Госключ): «СФОРМИРОВАТЬ» → «ПЕРЕЙТИ В ГОСКЛЮЧ».</li>
+      <li>Меню → «Задания на сегодня» → карточка → QR, листать «‹ ПРЕДЫДУЩЕЕ / СЛЕДУЮЩЕЕ ›».</li>
+    </ol>
+    <button onclick="location.reload()">Начать заново</button>
+  </div>
+  <div class="stage"><div id="frame"></div></div>
+</div>
+<template id="tpl"><div style="width: 100%; height: 100%; position: relative; overflow: hidden; background: #ffffff; font-family: Roboto, Arial, sans-serif; color: rgba(0,0,0,0.87)">
 
   <sc-if value="{{scr.main}}" hint-placeholder-val="{{ true }}">
   <div style="position: absolute; inset: 0; display: flex; flex-direction: column">
@@ -28,8 +57,11 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
       </button>
       <div style="flex-grow: 1; font-size: 20px; font-weight: 500; color: #ffffff">Маршрутный лист</div>
+      <button aria-label="Уведомления" style="width: 48px; height: 48px; border: 0; background: none; padding: 0; color: #ffffff; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8l-4 4V4a1 1 0 0 1 1-1zm3 4v2h10V7zm0 4v2h7v-2z"></path></svg>
+      </button>
     </div>
-    <div style="flex-grow: 1; padding: 20px 24px 0 24px; display: flex; flex-direction: column">
+    <div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 16px 24px; display: flex; flex-direction: column">
       <div style="font-size: 30px; font-weight: 500; line-height: 36px; color: #000000">Добрый день,<br>Иванов Иван!</div>
       <div style="margin-top: 20px; font-size: 18px; font-weight: 500; color: #000000">Маршрутный лист № 004421112 от 06.11</div>
       <sc-if value="{{t2Unsigned}}" hint-placeholder-val="{{ true }}">
@@ -66,6 +98,9 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
       </button>
       <div style="flex-grow: 1; font-size: 20px; font-weight: 500; color: #ffffff">Задания на сегодня</div>
+      <button aria-label="Поиск" style="width: 48px; height: 48px; border: 0; background: none; padding: 0; color: #ffffff; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6"></path></svg>
+      </button>
     </div>
     <div style="height: 48px; flex-shrink: 0; background: #000000; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
       <div style="border-bottom: 2px solid #ffffff; color: #ffffff; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center">СПИСОК</div>
@@ -122,14 +157,22 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
 
   <sc-if value="{{scr.card}}" hint-placeholder-val="{{ false }}">
   <div style="position: absolute; inset: 0; display: flex; flex-direction: column">
-    <div style="height: 170px; flex-shrink: 0; position: relative; background: #F3F1EC; background-image: linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(0deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 46px 38px">
+    <div style="height: 190px; flex-shrink: 0; position: relative; background: #F3F1EC; background-image: linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(0deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 46px 38px">
+      <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 104px; height: 10px; background: #E4E2DC; transform: rotate(-4deg)"></div>
+      <div aria-hidden="true" style="position: absolute; left: 70px; top: 0; bottom: 0; width: 9px; background: #E4E2DC; transform: rotate(18deg)"></div>
       <button onClick="{{go.tasks}}" aria-label="Назад" style="position: absolute; left: 16px; top: 24px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" aria-hidden="true"><path d="M20 12H5M11 5l-7 7 7 7"></path></svg>
       </button>
-      <div style="position: absolute; left: 175px; top: 70px; width: 40px; height: 40px; border-radius: 50%; background: #000; color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{card.n}}</div>
+      <button aria-label="Навигатор" style="position: absolute; right: 16px; top: 24px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><path d="M5 11l1.6-4.6A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zm2.2 0h9.6l-1-3H8.2zM7.5 13.5a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm9 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"></path></svg>
+      </button>
+      <div style="position: absolute; left: 175px; top: 78px; width: 40px; height: 40px; border-radius: 50%; background: #000; color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{card.n}}</div>
     </div>
-    <div style="flex-grow: 1; padding: 20px 20px 0 20px; display: flex; flex-direction: column">
-      <div style="font-size: 24px; line-height: 30px">{{card.addr}}</div>
+    <div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 20px 20px 0 20px; display: flex; flex-direction: column; position: relative">
+      <button aria-label="Описание задания" style="position: absolute; right: 20px; top: 14px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#00a5a9"></circle><path d="M12 6.5v7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"></path><circle cx="12" cy="17.2" r="1.4" fill="#fff"></circle></svg>
+      </button>
+      <div style="padding-right: 64px; font-size: 24px; line-height: 30px">{{card.addr}}</div>
       <div style="margin-top: 14px; font-size: 19px">{{card.name}}</div>
       <div style="margin-top: 14px; height: 44px; display: flex; align-items: center; font-size: 17px">
         <span style="flex-grow: 1">Доп. заданий - 1</span>
@@ -162,6 +205,10 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A34E00" stroke-width="2.4" aria-hidden="true" style="flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
         </button>
       </sc-if>
+      <div style="margin-top: 14px; padding-bottom: 8px; display: flex; justify-content: space-between">
+        <button style="height: 48px; border: 0; background: none; padding: 0; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: #00a5a9">ЧТО-ТО ПОШЛО НЕ ТАК?</button>
+        <button style="height: 48px; border: 0; background: none; padding: 0; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: #00a5a9">ОТМЕНИТЬ</button>
+      </div>
     </div>
     <button style="flex-shrink: 0; height: 56px; border: 0; background: #00a5a9; color: #ffffff; font-family: inherit; font-size: 15px; font-weight: 500; letter-spacing: 0.5px">ПЕРЕДАЛ ГРУЗ</button>
   </div>
@@ -175,7 +222,11 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
       </button>
       <div style="flex-grow: 1; font-size: 20px; font-weight: 500; color: #ffffff">QR-код задания</div>
     </div>
-    <div style="flex-grow: 1; padding: 24px 24px 0 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+    <div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 24px 24px 0 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: {{card.badgeBg}}; color: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center">{{card.n}}</div>
+        <div style="font-size: 13px; font-weight: 500; color: {{card.statusColor}}">{{card.statusLabel}}</div>
+      </div>
       <div style="font-size: 20px; font-weight: 700; line-height: 26px">{{card.addr}}</div>
       <div style="font-size: 16px">{{card.name}}</div>
       <div style="font-size: 13px; color: rgba(0,0,0,0.6)">Задание № {{card.id}} · МЛ № 004421112 от 06.11</div>
@@ -187,6 +238,10 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
         </div>
       </div>
       <div style="margin-top: 14px; font-size: 15px; line-height: 21px; color: rgba(0,0,0,0.6)">Покажите код по требованию инспектора</div>
+    </div>
+    <div style="flex-shrink: 0; height: 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid #DFDFDF">
+      <button onClick="{{qrPrev}}" aria-disabled="{{qrPrevDisabled}}" style="border: 0; background: none; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: {{qrPrevColor}}">‹ ПРЕДЫДУЩЕЕ</button>
+      <button onClick="{{qrNext}}" aria-disabled="{{qrNextDisabled}}" style="border: 0; border-left: 1px solid #DFDFDF; background: none; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: {{qrNextColor}}">СЛЕДУЮЩЕЕ ›</button>
     </div>
   </div>
   </sc-if>
@@ -298,11 +353,16 @@ body{background:#1f2328;display:flex;align-items:center;justify-content:center;o
 
   <sc-if value="{{drawer}}" hint-placeholder-val="{{ false }}">
     <div style="position: absolute; inset: 0; z-index: 20; display: flex">
-      <nav aria-label="Главное меню" style="width: 300px; height: 844px; flex-shrink: 0; background: #333B49; color: #ffffff; display: flex; flex-direction: column">
-        <div style="background: #2A303C; padding: 32px 20px 24px 20px; font-size: 16px">Иванов Иван Иванович</div>
+      <nav aria-label="Главное меню" style="width: 300px; height: 100%; overflow-y: auto; flex-shrink: 0; background: #333B49; color: #ffffff; display: flex; flex-direction: column">
+        <div style="background: #2A303C; padding: 32px 20px 24px 20px; display: flex; flex-direction: column; gap: 18px">
+          <div style="width: 72px; height: 72px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#555" aria-hidden="true"><circle cx="12" cy="8" r="4.2"></circle><path d="M3.5 21c0-4.4 3.8-7.5 8.5-7.5s8.5 3.1 8.5 7.5z"></path></svg>
+          </div>
+          <div style="font-size: 16px">Иванов Иван Иванович</div>
+        </div>
         <div style="padding-top: 8px; display: flex; flex-direction: column">
           <sc-for list="{{menu}}" as="m" hint-placeholder-count="5">
-            <button onClick="{{m.pick}}" style="height: 52px; padding: 0 20px; border: 0; background: {{m.bg}}; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 500; text-align: left">{{m.label}}</button>
+            <button onClick="{{m.pick}}" style="min-height: 52px; padding: 0 20px; border: 0; background: {{m.bg}}; color: {{m.fg}}; font-family: inherit; font-size: 16px; font-weight: 500; text-align: left">{{m.label}}</button>
           </sc-for>
         </div>
       </nav>
@@ -325,8 +385,12 @@ class MiniDC {
     const ctx = this.renderVals();
     this.root.textContent = '';
     for (const n of [...this.tpl.content.childNodes]) render(n, ctx, this.root);
-    const els = [...this.root.querySelectorAll('[data-scroll]')];
-    els.forEach((e, i) => { if (scrolls[i] != null) e.scrollTop = scrolls[i]; });
+    const key = this.state.screen || 'main';
+    if (key === this._screen) {
+      const els = [...this.root.querySelectorAll('[data-scroll]')];
+      els.forEach((e, i) => { if (scrolls[i] != null) e.scrollTop = scrolls[i]; });
+    }
+    this._screen = key;
   }
 }
 function look(ctx, expr) {
@@ -508,7 +572,10 @@ class Component extends MiniDC {
       open: () => set({ screen: 'card', prev: 'tasks', taskIdx: i }),
       qr: () => set({ screen: 'qr', prev: 'tasks', taskIdx: i })
     }));
-    const card = rows[s.taskIdx ?? 0];
+    const idx = s.taskIdx ?? 0;
+    const cardRow = rows[idx];
+    const card = { ...cardRow, badgeBg: cardRow.current ? '#00a5a9' : '#bdbdbd', statusLabel: cardRow.current ? 'ЗАДАНИЕ В РАБОТЕ' : 'ЗАДАНИЕ', statusColor: cardRow.current ? '#00777A' : 'rgba(0,0,0,0.6)' };
+    const qrPrevOk = idx > 0, qrNextOk = idx < rows.length - 1;
 
     let seed = Number(card.id);
     const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
@@ -525,8 +592,15 @@ class Component extends MiniDC {
       for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { const f = finder(r, c); qrCells.push((f === -1 ? rnd() > 0.52 : f === 1) ? '#000000' : '#ffffff'); }
     }
 
-    const menu = [['main', 'Маршрутный лист'], ['tasks', 'Задания на сегодня'], ['etrn', 'Подписание ЭТрН']].map(([id, label]) => ({
-      label, bg: screen === id ? 'rgba(255,255,255,0.08)' : 'transparent', pick: nav(id)
+    const menu = [['card', 'Текущее задание'], ['tasks', 'Задания на сегодня'], ['main', 'Маршрутный лист'], ['etrn', 'Подписание ЭТрН'],
+      [null, 'Сканировать штрихкод'], [null, 'Ввести номер'], [null, 'Изменения на отправку'], [null, 'Отчеты'], [null, 'Видео-курс'], ['ver', '2.0.7'], [null, 'Выход']
+    ].map(([id, label]) => ({
+      label,
+      bg: screen === id ? 'rgba(255,255,255,0.08)' : 'transparent',
+      fg: id === 'ver' ? 'rgba(255,255,255,0.5)' : '#ffffff',
+      pick: id === 'card' ? () => set({ screen: 'card', prev: 'tasks', taskIdx: 0, drawer: false })
+        : (id && id !== 'ver') ? nav(id)
+        : id === 'ver' ? () => {} : () => { set({ drawer: false }); toastFor('В прототипе этот раздел не нарисован'); }
     }));
 
     const refreshing = !!s.refreshing;
@@ -539,6 +613,9 @@ class Component extends MiniDC {
       },
       drawer: !!s.drawer, openDrawer: () => set({ drawer: true }), closeDrawer: () => set({ drawer: false }), menu,
       t2Signed, t2Unsigned, taskRows, card, qrCells,
+      qrPrev: () => { if (qrPrevOk) set({ taskIdx: idx - 1 }); }, qrNext: () => { if (qrNextOk) set({ taskIdx: idx + 1 }); },
+      qrPrevDisabled: qrPrevOk ? 'false' : 'true', qrNextDisabled: qrNextOk ? 'false' : 'true',
+      qrPrevColor: qrPrevOk ? '#00a5a9' : 'rgba(0,0,0,0.3)', qrNextColor: qrNextOk ? '#00a5a9' : 'rgba(0,0,0,0.3)',
       routes, chips, sheetOpen: !!sh, sheet, closeSheet: () => set({ sheetId: null }),
       openGoskey: () => toastFor('Здесь откроется приложение Госключ'),
       refreshing, refreshLabel: refreshing ? 'ОБНОВЛЯЕМ…' : 'ОБНОВИТЬ',
@@ -550,7 +627,8 @@ class Component extends MiniDC {
 
 const frame = document.getElementById('frame');
 function fit() {
-  const s = Math.min(window.innerWidth / 390, window.innerHeight / 844, window.innerWidth > 500 ? 1 : 10);
+  if (window.innerWidth <= 760) { frame.style.transform = ''; return; }
+  const s = Math.min(1, (window.innerHeight - 48) / 844);
   frame.style.transform = 'scale(' + s + ')';
 }
 window.addEventListener('resize', fit); fit();
