@@ -398,6 +398,7 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-bnav-item[aria-current="page"] { color: var(--on-surface); }
 .m-bnav-item[aria-current="page"] .m-bnav-pill { background: var(--primary-container); color: var(--on-primary-container); }
 .m-badge { position: absolute; top: -4px; left: 32px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-full); background: var(--error); color: var(--on-error); font-size: 11px; line-height: 18px; font-weight: 700; text-align: center; }
+.m-badge-dot { top: 4px; left: 38px; min-width: 0; width: 6px; height: 6px; padding: 0; }
 
 /* ---------- ActionBar ---------- */
 .m-actionbar { position: relative; background: var(--surface); padding: var(--space-3) var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
@@ -1054,7 +1055,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         var active = it.id === p.active;
         return h('button', { key: it.id, type: 'button', className: 'm-bnav-item', 'aria-current': active ? 'page' : undefined, onClick: function () { p.onChange && p.onChange(it.id); } },
           h('span', { className: 'm-bnav-pill' }, h(Icon, { name: it.icon, fill: active }),
-            it.badge ? h('span', { className: 'm-badge' }, it.badge) : null),
+            it.badge === true ? h('span', { className: 'm-badge m-badge-dot', role: 'img', 'aria-label': it.badgeLabel || 'Требует внимания' })
+              : it.badge ? h('span', { className: 'm-badge' }, it.badge) : null),
           it.label);
       }));
   }
@@ -1516,7 +1518,7 @@ sc-if,sc-for{display:contents}
 <div class="m-kv"><button type="button" onClick="{{goOutbox}}" class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;"><span class="m-ic" aria-hidden="true">cloud_upload</span><span class="m-kv-label">Изменения на отправку<small>{{outboxNote}}</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></button>
 <div class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit;"><span class="m-ic" aria-hidden="true">receipt_long</span><span class="m-kv-label">Отчёты</span><span class="m-ic" aria-hidden="true">chevron_right</span></div>
 <div class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit;"><span class="m-ic" aria-hidden="true">smart_display</span><span class="m-kv-label">Видео-курс</span><span class="m-ic" aria-hidden="true">chevron_right</span></div>
-<div class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit;"><span class="m-ic" aria-hidden="true">verified_user</span><span class="m-kv-label">Разрешения<small>Геолокация выключена</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></div>
+<div class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit;"><span class="m-ic" aria-hidden="true">verified_user</span><span class="m-kv-label">Разрешения<small style="color: var(--error);">Геолокация выключена</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></div>
 <button type="button" onClick="{{openTheme}}" class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;"><span class="m-ic" aria-hidden="true">contrast</span><span class="m-kv-label">Тема<small>{{themeNote}}</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></button>
 <div class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--outline-variant); background: transparent; color: inherit;"><span class="m-ic" aria-hidden="true">info</span><span class="m-kv-label">О приложении<small>Версия 3.0.0</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></div>
 </div>
@@ -1955,7 +1957,7 @@ class Component extends DCLogic {
       isMap: s.screen === 'map', isTask: s.screen === 'task', isAdd: s.screen === 'add', isPlaces: s.screen === 'places', isOutbox: s.screen === 'outbox', showNav: s.screen === 'route',
       tab: s.tab,
       setTab: function (id) { var o = { tab: id, screen: 'route' }; if (id === 'tasks') o.seenTasks = true; if (id === 'msg') o.seenMsg = true; self.setState(o); },
-      nav: [{ id: 'ml', icon: 'route', label: 'МЛ' }, { id: 'tasks', icon: 'checklist', label: 'Задания' }, { id: 'msg', icon: 'chat', label: 'Сообщения' }, { id: 'more', icon: 'account_circle', label: 'Профиль' }],
+      nav: [{ id: 'ml', icon: 'route', label: 'МЛ' }, { id: 'tasks', icon: 'checklist', label: 'Задания' }, { id: 'msg', icon: 'chat', label: 'Сообщения' }, { id: 'more', icon: 'account_circle', label: 'Профиль', badge: true, badgeLabel: 'Выключены разрешения' }],
       syncState: syncState, syncCount: syncState === 'rejected' ? rejected.length : pending, offline: s.offline,
       pendRow: s.log.length ? s.log.length : null, pendNote: rejected.length ? 'Не отправлено: ' + rejected.length + '. Откройте и исправьте.' : s.offline ? 'Нет сети — уйдут сами, когда появится.' : 'Отправляются в фоне, ничего делать не нужно.',
       // МЛ
