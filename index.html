@@ -341,7 +341,7 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-caption { font-size: 13px; line-height: 16px; font-weight: 600; color: var(--on-surface-variant); margin: 0; }
 
 /* ---------- Button ---------- */
-.m-btn { font: inherit; font-size: 16px; line-height: 20px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--touch-min); padding: 0 20px; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; transition: background-color .15s; text-align: center; }
+.m-btn { position: relative; font: inherit; font-size: 16px; line-height: 20px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--touch-min); padding: 0 20px; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; transition: background-color .15s; text-align: center; }
 .m-btn-lg { min-height: var(--touch-primary); font-size: 17px; padding: 0 24px; }
 .m-btn-block { display: flex; width: 100%; }
 .m-btn-filled { background: var(--primary); color: var(--on-primary); }
@@ -352,10 +352,12 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-btn-danger { background: var(--error); color: var(--on-error); }
 .m-btn-danger-text { background: transparent; color: var(--error); padding: 0 12px; }
 .m-btn[disabled] { background: var(--surface-container-highest); color: var(--on-surface-variant); border-color: transparent; cursor: default; }
-.m-btn-loading { pointer-events: none; }
+.m-btn-text[disabled], .m-btn-danger-text[disabled] { background: transparent; }
+/* Загрузка: кнопка недоступна, содержимое остаётся невидимым (ширина не меняется), спиннер по центру поверх. */
+.m-btn-loading > :not(.m-spinner) { visibility: hidden; }
+.m-btn-loading > .m-spinner { position: absolute; left: 50%; top: 50%; margin: -10px 0 0 -10px; }
 /* Иконка слева, по центру — текст: справа противовес шириной в иконку. В узкой кнопке он сжимается первым. */
 .m-btn-icon::after { content: ""; flex: 0 1000 auto; width: var(--icon-md); min-width: 0; }
-.m-btn-loading::after { width: 20px; }
 .m-spinner { width: 20px; height: 20px; border-radius: var(--radius-full); border: 2.5px solid currentColor; border-right-color: transparent; animation: m-spin .8s linear infinite; }
 @keyframes m-spin { to { transform: rotate(360deg); } }
 
@@ -1021,11 +1023,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   function Button(p) {
     var variant = p.variant || 'filled';
     return h('button', {
-      type: 'button', className: cx('m-btn', 'm-btn-' + variant, p.size === 'lg' && 'm-btn-lg', p.block && 'm-btn-block', p.loading && 'm-btn-loading', (p.icon || p.loading) && 'm-btn-icon', p.className),
-      disabled: p.disabled, onClick: p.onClick, 'aria-busy': p.loading ? 'true' : undefined
+      type: 'button', className: cx('m-btn', 'm-btn-' + variant, p.size === 'lg' && 'm-btn-lg', p.block && 'm-btn-block', p.loading && 'm-btn-loading', p.icon && 'm-btn-icon', p.className),
+      disabled: p.disabled || p.loading, onClick: p.onClick, 'aria-busy': p.loading ? 'true' : undefined
     },
-      p.loading ? h('span', { className: 'm-spinner', 'aria-hidden': 'true' }) : (p.icon ? h(Icon, { name: p.icon }) : null),
-      h('span', null, p.children));
+      p.icon ? h(Icon, { name: p.icon }) : null,
+      h('span', null, p.children),
+      p.loading ? h('span', { className: 'm-spinner', 'aria-hidden': 'true' }) : null);
   }
 
   function IconButton(p) {
