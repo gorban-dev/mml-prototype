@@ -353,9 +353,11 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-btn-danger-text { background: transparent; color: var(--error); padding: 0 12px; }
 .m-btn[disabled] { background: var(--surface-container-highest); color: var(--on-surface-variant); border-color: transparent; cursor: default; }
 .m-btn-text[disabled], .m-btn-danger-text[disabled] { background: transparent; }
-/* Загрузка: кнопка недоступна, содержимое остаётся невидимым (ширина не меняется), спиннер по центру поверх. */
-.m-btn-loading > :not(.m-spinner) { visibility: hidden; }
-.m-btn-loading > .m-spinner { position: absolute; left: 50%; top: 50%; margin: -10px 0 0 -10px; }
+/* Загрузка: кнопка недоступна, содержимое гаснет (ширина не меняется), спиннер проявляется по центру поверх. */
+.m-btn > :not(.m-spinner) { transition: opacity .15s; }
+.m-btn-loading > :not(.m-spinner) { opacity: 0; }
+.m-btn-loading > .m-spinner { position: absolute; left: 50%; top: 50%; margin: -10px 0 0 -10px; animation: m-spin .8s linear infinite, m-fade-in .15s ease-out; }
+@keyframes m-fade-in { from { opacity: 0; } }
 /* Иконка слева, по центру — текст: справа противовес шириной в иконку. В узкой кнопке он сжимается первым. */
 .m-btn-icon::after { content: ""; flex: 0 1000 auto; width: var(--icon-md); min-width: 0; }
 .m-spinner { width: 20px; height: 20px; border-radius: var(--radius-full); border: 2.5px solid currentColor; border-right-color: transparent; animation: m-spin .8s linear infinite; }
