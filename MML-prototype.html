@@ -353,6 +353,9 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-btn-danger-text { background: transparent; color: var(--error); padding: 0 12px; }
 .m-btn[disabled] { background: var(--surface-container-highest); color: var(--on-surface-variant); border-color: transparent; cursor: default; }
 .m-btn-loading { pointer-events: none; }
+/* Иконка слева, по центру — текст: справа противовес шириной в иконку. В узкой кнопке он сжимается первым. */
+.m-btn-icon::after { content: ""; flex: 0 1000 auto; width: var(--icon-md); min-width: 0; }
+.m-btn-loading::after { width: 20px; }
 .m-spinner { width: 20px; height: 20px; border-radius: var(--radius-full); border: 2.5px solid currentColor; border-right-color: transparent; animation: m-spin .8s linear infinite; }
 @keyframes m-spin { to { transform: rotate(360deg); } }
 
@@ -395,9 +398,9 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 /* ---------- ActionBar ---------- */
 .m-actionbar { position: relative; background: var(--surface); padding: var(--space-3) var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
 .m-actionbar::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: var(--space-6); background: linear-gradient(to bottom, color-mix(in srgb, var(--surface) 0%, transparent), var(--surface)); pointer-events: none; }
-.m-actionbar-scan { --surface: #0d1414; }
+.m-actionbar-scan { --surface: #0e1515; }
 .m-actionbar:has(.m-actionbar-split) { container-type: inline-size; }
-@container (max-width: 310px) { .m-actionbar-split .m-btn-outlined { padding: 0; width: 56px; } .m-actionbar-split .m-btn-outlined > span:not(.m-ic) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+@container (max-width: 310px) { .m-actionbar-split .m-btn-outlined { padding: 0; width: 56px; } .m-actionbar-split .m-btn-outlined::after { display: none; } .m-actionbar-split .m-btn-outlined > span:not(.m-ic) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
 .m-actionbar-split { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); }
 .m-actionbar-split .m-btn { width: 100%; padding: 0 16px; white-space: nowrap; }
 .m-actionbar-row { display: flex; gap: var(--space-2); }
@@ -592,20 +595,20 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-snack-dock::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: var(--space-6); background: linear-gradient(to bottom, color-mix(in srgb, var(--surface) 0%, transparent), var(--surface)); pointer-events: none; }
 
 /* ---------- ScannerFrame ---------- */
-.m-scan { position: relative; height: 420px; background: #0d1414; color: #eef4f3; display: flex; flex-direction: column; overflow: hidden; }
+.m-scan { position: relative; height: 420px; background: #0e1515; color: #e4edec; display: flex; flex-direction: column; overflow: hidden; }
 /* Сканер — весь кадр: окна и затемнения нет. Шапка и низ — на градиенте 50% чёрного, белый текст не пропадает на светлом кадре */
 .m-scan-top { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-6); position: relative; z-index: 2; background: linear-gradient(rgba(0, 0, 0, 0.5), transparent); }
 .m-scan-top h2 { flex: 1; margin: 0; font-size: 18px; line-height: 24px; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
-.m-scan .m-iconbtn { color: #eef4f3; width: 56px; height: 56px; border-radius: var(--radius-full); background: rgba(0, 0, 0, 0.4); }
+.m-scan .m-iconbtn { color: #e4edec; width: 56px; height: 56px; border-radius: var(--radius-full); background: rgba(0, 0, 0, 0.4); }
 .m-scan-bottom { margin-top: auto; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6) var(--space-4) var(--space-4); position: relative; z-index: 2; background: linear-gradient(transparent, rgba(0, 0, 0, 0.5)); }
 /* Подсказка — на полупрозрачной подложке: не сливается с живым кадром */
 .m-scan-hint { position: relative; z-index: 2; align-self: center; margin: auto var(--space-4) var(--space-2); max-width: calc(100% - 2 * var(--space-4)); box-sizing: border-box; text-align: center; font-size: 15px; line-height: 20px; padding: 6px var(--space-3); border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.5); }
 .m-scan-hint + .m-scan-bottom { margin-top: 0; }
-.m-scan-bottom .m-btn { flex: 1; min-height: 56px; background: rgba(238, 244, 243, 0.14); color: #eef4f3; }
+.m-scan-bottom .m-btn { flex: 1; min-height: 56px; background: rgba(228, 237, 236, 0.14); color: #e4edec; }
 .m-scan-result { position: absolute; left: var(--space-4); right: var(--space-4); top: 80px; z-index: 3; display: flex; gap: var(--space-2); align-items: center; padding: 10px var(--space-3); border-radius: var(--radius-sm); font-size: 15px; line-height: 20px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); animation: m-scan-result-in 200ms ease-out; }
 .m-scan-result-ok { background: var(--success-container); color: var(--success); }
 .m-scan-result-err { background: var(--error-container); color: var(--error); }
-.m-scan-result-load { background: #eef4f3; color: #0d1414; }
+.m-scan-result-load { background: #e4edec; color: #0e1515; }
 @keyframes m-scan-result-in { from { opacity: 0; transform: translateY(-16px); } }
 /* «Дождь» по всему кадру: полоса primary-fixed #00A5A9 ходит в средней трети экрана, капли осыпаются за ней (образец — сканер Аптеки.ру) */
 .m-scan-rain { position: absolute; inset: 0; z-index: 1; pointer-events: none; transition: background 200ms; }
@@ -1018,7 +1021,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   function Button(p) {
     var variant = p.variant || 'filled';
     return h('button', {
-      type: 'button', className: cx('m-btn', 'm-btn-' + variant, p.size === 'lg' && 'm-btn-lg', p.block && 'm-btn-block', p.loading && 'm-btn-loading', p.className),
+      type: 'button', className: cx('m-btn', 'm-btn-' + variant, p.size === 'lg' && 'm-btn-lg', p.block && 'm-btn-block', p.loading && 'm-btn-loading', (p.icon || p.loading) && 'm-btn-icon', p.className),
       disabled: p.disabled, onClick: p.onClick, 'aria-busy': p.loading ? 'true' : undefined
     },
       p.loading ? h('span', { className: 'm-spinner', 'aria-hidden': 'true' }) : (p.icon ? h(Icon, { name: p.icon }) : null),
