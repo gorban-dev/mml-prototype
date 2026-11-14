@@ -313,6 +313,15 @@
 .field-label { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 600; }
 .field-input { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 400; font-variant-numeric: tabular-nums; }
 .dialog-title { font-family: var(--font-sans); font-size: 20px; line-height: 26px; font-weight: 600; }
+.bar-title { font-family: var(--font-sans); font-size: 20px; line-height: 26px; font-weight: 600; }
+.section { font-family: var(--font-sans); font-size: 13px; line-height: 16px; font-weight: 700; }
+.stat-value { font-family: var(--font-sans); font-size: 20px; line-height: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat-label { font-family: var(--font-sans); font-size: 14px; line-height: 18px; font-weight: 400; }
+.panel-title { font-family: var(--font-sans); font-size: 16px; line-height: 22px; font-weight: 600; }
+.panel-text { font-family: var(--font-sans); font-size: 15px; line-height: 20px; font-weight: 400; }
+.state-title { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 600; }
+.state-text { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; }
+.kv-value { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .code { font-family: var(--font-mono); font-size: 15px; line-height: 20px; font-weight: 500; }
 .code-lg { font-family: var(--font-mono); font-size: 28px; line-height: 34px; font-weight: 500; }
 </style><style>/* ---------- base ---------- */
@@ -370,6 +379,9 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-topbar-title { flex: 1; min-width: 0; padding: 0 var(--space-3); }
 .m-topbar-title h1 { margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; text-wrap: balance; }
 .m-topbar-title p { margin: 0; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+/* Контент под панелью прокручен: градиент 16px от surface к прозрачному, как TopBar.kt (isContentScrolled) */
+.m-topbar-scrolled { position: relative; z-index: 1; }
+.m-topbar-scrolled::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: var(--space-4); background: linear-gradient(var(--surface), transparent); pointer-events: none; }
 .m-envtag { font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: .04em; background: var(--tertiary); color: var(--on-tertiary); border-radius: var(--radius-xs); padding: 2px 6px; margin-left: var(--space-2); vertical-align: 2px; }
 
 /* ---------- BottomNav ---------- */
@@ -581,19 +593,34 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 
 /* ---------- ScannerFrame ---------- */
 .m-scan { position: relative; height: 420px; background: #0d1414; color: #eef4f3; display: flex; flex-direction: column; overflow: hidden; }
-.m-scan-top { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); position: relative; z-index: 2; }
-.m-scan-top h2 { flex: 1; margin: 0; font-size: 18px; line-height: 24px; font-weight: 600; }
-.m-scan .m-iconbtn { color: #eef4f3; }
-.m-scan-win { position: absolute; left: 50%; top: 46%; width: 260px; height: 150px; transform: translate(-50%, -50%); border-radius: var(--radius-md); box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.55); }
-.m-scan-win::before, .m-scan-win::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-md); border: 3px solid #eef4f3; clip-path: polygon(0 0, 28% 0, 28% 4px, 4px 4px, 4px 28%, 0 28%, 0 72%, 4px 72%, 4px calc(100% - 4px), 28% calc(100% - 4px), 28% 100%, 72% 100%, 72% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 72%, 100% 72%, 100% 28%, calc(100% - 4px) 28%, calc(100% - 4px) 4px, 72% 4px, 72% 0, 100% 0, 100% 100%, 0 100%); }
-.m-scan-hint { position: absolute; left: 0; right: 0; top: calc(46% + 96px); text-align: center; font-size: 15px; line-height: 20px; padding: 0 var(--space-6); }
-.m-scan-bottom { margin-top: auto; display: flex; gap: var(--space-2); padding: var(--space-4); position: relative; z-index: 2; }
-.m-scan-bottom .m-btn { flex: 1; background: rgba(238, 244, 243, 0.14); color: #eef4f3; }
-.m-scan-result { position: absolute; left: var(--space-4); right: var(--space-4); top: 72px; z-index: 3; display: flex; gap: var(--space-2); align-items: center; padding: 10px var(--space-3); border-radius: var(--radius-sm); font-size: 15px; line-height: 20px; font-weight: 600; }
+/* Сканер — весь кадр: окна и затемнения нет. Шапка и низ — на градиенте 50% чёрного, белый текст не пропадает на светлом кадре */
+.m-scan-top { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-6); position: relative; z-index: 2; background: linear-gradient(rgba(0, 0, 0, 0.5), transparent); }
+.m-scan-top h2 { flex: 1; margin: 0; font-size: 18px; line-height: 24px; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.m-scan .m-iconbtn { color: #eef4f3; width: 56px; height: 56px; border-radius: var(--radius-full); background: rgba(0, 0, 0, 0.4); }
+.m-scan-bottom { margin-top: auto; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6) var(--space-4) var(--space-4); position: relative; z-index: 2; background: linear-gradient(transparent, rgba(0, 0, 0, 0.5)); }
+/* Подсказка — на полупрозрачной подложке: не сливается с живым кадром */
+.m-scan-hint { position: relative; z-index: 2; align-self: center; margin: auto var(--space-4) var(--space-2); max-width: calc(100% - 2 * var(--space-4)); box-sizing: border-box; text-align: center; font-size: 15px; line-height: 20px; padding: 6px var(--space-3); border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.5); }
+.m-scan-hint + .m-scan-bottom { margin-top: 0; }
+.m-scan-bottom .m-btn { flex: 1; min-height: 56px; background: rgba(238, 244, 243, 0.14); color: #eef4f3; }
+.m-scan-result { position: absolute; left: var(--space-4); right: var(--space-4); top: 80px; z-index: 3; display: flex; gap: var(--space-2); align-items: center; padding: 10px var(--space-3); border-radius: var(--radius-sm); font-size: 15px; line-height: 20px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); animation: m-scan-result-in 200ms ease-out; }
 .m-scan-result-ok { background: var(--success-container); color: var(--success); }
 .m-scan-result-err { background: var(--error-container); color: var(--error); }
-.m-scan-hit .m-scan-win::before, .m-scan-hit .m-scan-win::after { border-color: var(--success); }
-.m-scan-miss .m-scan-win::before, .m-scan-miss .m-scan-win::after { border-color: var(--error); }
+.m-scan-result-load { background: #eef4f3; color: #0d1414; }
+@keyframes m-scan-result-in { from { opacity: 0; transform: translateY(-16px); } }
+/* «Дождь» по всему кадру: полоса primary-fixed #00A5A9 ходит в средней трети экрана, капли осыпаются за ней (образец — сканер Аптеки.ру) */
+.m-scan-rain { position: absolute; inset: 0; z-index: 1; pointer-events: none; transition: background 200ms; }
+.m-scan-rain b { position: absolute; left: var(--space-4); right: var(--space-4); top: 33%; height: 2px; border-radius: 1px; background: linear-gradient(90deg, transparent, #00a5a9 12%, #00a5a9 88%, transparent); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 -16px 28px rgba(0, 165, 169, 0.3); animation: m-scan-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; }
+.m-scan-rain i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #00a5a9; opacity: 0; animation: m-scan-drop 1.6s linear infinite; }
+@keyframes m-scan-sweep { to { top: 66%; } }
+@keyframes m-scan-drop { 0% { transform: translateY(0); opacity: 0.9; } 100% { transform: translateY(110px); opacity: 0; } }
+/* Результат — цветом полосы: код прочитан — кадр темнеет, полоса встаёт по центру; успех #72D392; ошибка #FF8C80 1,2 с и тряска 4 dp, сканирование продолжается */
+.m-scan-busy .m-scan-rain { background: rgba(0, 0, 0, 0.3); }
+.m-scan-busy .m-scan-rain b, .m-scan-hit .m-scan-rain b { animation: none; top: 50%; }
+.m-scan-hit .m-scan-rain b { background: linear-gradient(90deg, transparent, #72d392 12%, #72d392 88%, transparent); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 20px rgba(114, 211, 146, 0.45); }
+.m-scan-miss .m-scan-rain b { background: linear-gradient(90deg, transparent, #ff8c80 12%, #ff8c80 88%, transparent); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 -16px 28px rgba(255, 140, 128, 0.3); animation: m-scan-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate, m-scan-shake 240ms; }
+.m-scan-miss .m-scan-rain i { background: #ff8c80; }
+@keyframes m-scan-shake { 25%, 75% { translate: 4px 0; } 50% { translate: -4px 0; } }
+@media (prefers-reduced-motion: reduce) { .m-scan-rain i { display: none; } .m-scan-rain b { animation: none; top: 50%; } .m-scan-miss .m-scan-rain b { animation: none; } .m-scan-result { animation: none; } }
 
 /* ---------- MapMarker ---------- */
 .m-map { position: relative; height: 200px; background: var(--surface-container-highest); border-radius: var(--radius-md); overflow: hidden; background-image: linear-gradient(var(--outline-variant) 1px, transparent 1px), linear-gradient(90deg, var(--outline-variant) 1px, transparent 1px); background-size: 40px 40px; }
@@ -1005,7 +1032,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- TopBar ---------- */
   function TopBar(p) {
-    return h('header', { className: 'm-topbar' },
+    return h('header', { className: 'm-topbar' + (p.scrolled ? ' m-topbar-scrolled' : '') },
       p.back ? h(IconButton, { icon: 'arrow_back', label: 'Назад', onClick: p.onBack }) : null,
       h('div', { className: 'm-topbar-title' },
         h('h1', null, p.title, p.testBuild ? h('span', { className: 'm-envtag' }, 'ТЕСТ') : null),
@@ -1289,14 +1316,18 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- ScannerFrame ---------- */
   function ScannerFrame(p) {
-    return h('div', { className: cx('m-scan', p.result && (p.result.ok ? 'm-scan-hit' : 'm-scan-miss')) },
+    var r = p.result;
+    var kind = r ? (r.loading ? 'load' : r.ok ? 'ok' : 'err') : null;
+    var drops = [];
+    for (var i = 0; i < 16; i++) drops.push(h('i', { key: i, style: { left: (3 + i * 6.1) + '%', top: (30 + i * 23 % 40) + '%', animationDelay: (i * 173 % 1900) + 'ms', animationDuration: (1300 + i * 97 % 900) + 'ms' } }));
+    return h('div', { className: cx('m-scan', kind === 'ok' && 'm-scan-hit', kind === 'err' && 'm-scan-miss', kind === 'load' && 'm-scan-busy') },
+      h('div', { className: 'm-scan-rain', 'aria-hidden': 'true' }, h('b'), kind === 'ok' || kind === 'load' ? null : drops),
       h('div', { className: 'm-scan-top' }, h(IconButton, { icon: 'close', label: 'Закрыть сканер' }), h('h2', null, p.title),
-        h(IconButton, { icon: p.torch ? 'flashlight_off' : 'flashlight_on', label: p.torch ? 'Выключить фонарик' : 'Включить фонарик' })),
-      p.result ? h('div', { className: 'm-scan-result m-scan-result-' + (p.result.ok ? 'ok' : 'err'), role: 'status' },
-        h(Icon, { name: p.result.ok ? 'check_circle' : 'error', fill: true }), p.result.text) : null,
-      h('div', { className: 'm-scan-win', 'aria-hidden': 'true' }),
+        p.noTorch ? null : h(IconButton, { icon: p.torch ? 'flashlight_off' : 'flashlight_on', label: p.torch ? 'Выключить фонарик' : 'Включить фонарик' })),
+      r ? h('div', { className: 'm-scan-result m-scan-result-' + kind, role: 'status' },
+        kind === 'load' ? h('span', { className: 'm-spinner', 'aria-hidden': 'true' }) : h(Icon, { name: kind === 'ok' ? 'check_circle' : 'error', fill: true }), r.text) : null,
       h('p', { className: 'm-scan-hint' }, p.hint),
-      h('div', { className: 'm-scan-bottom' }, h(Button, { variant: 'tonal', icon: 'keyboard' }, 'Ввести вручную')));
+      h('div', { className: 'm-scan-bottom' }, h(Button, { variant: 'tonal', icon: 'keyboard', size: 'lg', block: true }, 'Ввести вручную')));
   }
 
   /* ---------- MapMarker ---------- */
@@ -1467,10 +1498,10 @@ sc-if,sc-for{display:contents}
 </header>
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 16px;">
 <section style="display: flex; gap: 14px; align-items: center; background: var(--surface-container); border: 1px solid var(--outline-variant); border-radius: var(--radius-md); padding: 16px;">
-<span class="m-numc m-numc-progress" style="width: 48px; height: 48px; font-size: 18px;" aria-hidden="true">СД</span>
+<span class="m-numc m-numc-progress" style="width: 48px; height: 48px; font-size: 18px;" aria-hidden="true">ИИ</span>
 <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
-<b class="title-md">Сапроненков Дмитрий Викторович</b>
-<span class="body-md" style="color: var(--on-surface-variant);">+7 (999) 450-39-46</span>
+<b class="title-md">Иванов Иван Иванович</b>
+<span class="body-md" style="color: var(--on-surface-variant);">+7 (000) 000-00-00</span>
 <span class="body-md" style="color: var(--on-surface-variant);">Филиал: БЕРДСК</span>
 </div>
 </section>
