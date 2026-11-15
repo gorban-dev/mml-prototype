@@ -1174,8 +1174,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       h('div', { className: 'm-task-body' },
         h('p', { className: 'm-task-addr' }, p.address),
         h('p', { className: 'm-task-meta' }, p.pharmacy, p.code ? ' · Код ПД ' + p.code : null),
-        ((st !== 'not-started' && !p.hideStatus) || (p.flags && p.flags.length)) ? h('div', { className: 'm-task-flags' },
-          st !== 'not-started' && !p.hideStatus ? h(StatusBadge, { status: st, detail: p.detail }) : null,
+        ((st !== 'not-started') || (p.flags && p.flags.length)) ? h('div', { className: 'm-task-flags' },
+          st !== 'not-started' ? h(StatusBadge, { status: st, detail: p.detail }) : null,
           (p.flags || []).map(function (f, i) { return h('span', { key: i, className: 'm-status m-status-neutral' }, h(Icon, { name: f.icon, small: true }), f.label); })) : null,
         p.comment ? h('div', { className: 'm-task-note' }, h(Icon, { name: 'chat', small: true, fill: true }), h('span', null, h('b', null, 'Диспетчер: '), p.comment)) : null,
         p.counts && p.counts.length ? h('div', { className: 'm-chips' },
@@ -1445,7 +1445,7 @@ sc-if,sc-for{display:contents}
 <sc-if value="{{hasSkipped}}" hint-placeholder-val="{{no}}">
 <div class="m-section" style="padding-top: 20px;"><span>ПРОПУЩЕННЫЕ · {{skipped}}</span></div>
 <sc-for list="{{skippedList}}" as="t" hint-placeholder-count="1">
-<x-import component-from-global-scope="Mml.TaskListItem" num="{{t.num}}" state="skipped" detail="{{t.causeShort}}" hide-status="true" flags="{{t.listFlags}}" address="{{t.address}}" pharmacy="{{t.pharmacy}}" time="{{t.close}}" counts="{{t.counts}}" on-click="{{t.open}}"></x-import>
+<x-import component-from-global-scope="Mml.TaskListItem" num="{{t.num}}" state="skipped" detail="{{t.at}}" flags="{{t.listFlags}}" address="{{t.address}}" pharmacy="{{t.pharmacy}}" time="{{t.close}}" counts="{{t.counts}}" on-click="{{t.open}}"></x-import>
 </sc-for>
 </sc-if>
 <sc-if value="{{hasDone}}" hint-placeholder-val="{{no}}">
