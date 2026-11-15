@@ -1570,7 +1570,8 @@ sc-if,sc-for{display:contents}
 <sc-if value="{{notInProgress}}" hint-placeholder-val="{{yes}}"><section aria-label="Места и вес" style="flex-shrink: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5em, 1fr)); gap: 1px; border: 1px solid var(--outline-variant); border-radius: var(--radius-md); overflow: hidden; background: var(--outline-variant);"><div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; background: var(--surface-container);"><b style="font-size: 20px; line-height: 26px; font-weight: 600; font-variant-numeric: tabular-nums;">{{tp.total}}</b><span style="font-size: 14px; line-height: 18px; color: var(--on-surface-variant);">{{tp.totalLabel}}</span></div><div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; background: var(--surface-container);"><b style="font-size: 20px; line-height: 26px; font-weight: 600; font-variant-numeric: tabular-nums;">{{tp.kg}}</b><span style="font-size: 14px; line-height: 18px; color: var(--on-surface-variant);">{{tp.kgLabel}}</span></div></section><div class="m-section" style="padding: 12px 0 0;"><span>СОСТАВ МЕСТ</span></div><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{tp.places}}"></x-import><sc-if value="{{tp.hasExtra}}" hint-placeholder-val="{{yes}}"><div class="m-section" style="padding: 12px 0 0;"><span>ЕЩЁ В ЗАДАНИИ</span></div><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{tp.extra}}"></x-import></sc-if></sc-if>
 <sc-if value="{{showHours}}" hint-placeholder-val="{{yes}}"><div class="m-section" style="padding: 12px 0 0;"><span>ОБ АПТЕКЕ</span></div><div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px;"><div><div style="font-size: 15px;">{{cur.contactName}}</div><a href="tel:{{cur.phone}}" aria-label="Позвонить: {{cur.contactName}}" style="display: inline-flex; gap: 8px; align-items: center; min-height: 48px; color: var(--primary); font-size: 15px; font-weight: 600; text-decoration: none;"><span class="m-ic" aria-hidden="true" style="font-size: 20px;">call</span>{{cur.phone}}</a></div><sc-if value="{{notInProgress}}" hint-placeholder-val="{{yes}}"><div style="display: flex; gap: 8px; align-items: center;"><span class="m-ic" aria-hidden="true" style="font-size: 18px; color: var(--on-surface-variant);">description</span><span>Бумажные документы</span></div></sc-if><div style="display: flex; flex-direction: column; gap: 4px;"><span style="color: var(--on-surface-variant);">Примечания к аптеке</span><span style="font-size: 15px;">{{cur.notes}}</span></div><div style="color: var(--on-surface-variant); font-variant-numeric: tabular-nums;">Код пункта выдачи {{cur.code}} · Код ПД {{cur.pd}}</div></div></sc-if>
 <sc-if value="{{hasComment}}" hint-placeholder-val="{{no}}"><button type="button" onClick="{{openComment}}" style="width: 100%; box-sizing: border-box; display: flex; gap: 12px; align-items: center; min-height: 56px; padding: 10px 14px; border: 1px solid var(--outline); border-radius: var(--radius-md); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;"><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font-size: 14px; line-height: 20px; font-weight: 600;">Ваш комментарий</span><span style="display: block; font-size: 13px; line-height: 18px; color: var(--on-surface-variant);">Видит диспетчер</span><span style="display: block; margin-top: 4px; font-size: 15px; line-height: 20px;">{{commentText}}</span></span><span class="m-ic" aria-hidden="true" style="color: var(--primary);">edit</span></button></sc-if>
-<sc-if value="{{showTextRow}}" hint-placeholder-val="{{yes}}"><div style="display: flex; justify-content: {{textRowJustify}};"><sc-if value="{{noComment}}" hint-placeholder-val="{{yes}}"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant);" onClick="{{openComment}}"><span>Комментарий</span></button></sc-if><sc-if value="{{isInProgress}}" hint-placeholder-val="{{no}}"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant);" onClick="{{openCancel}}"><span>Отменить поездку</span></button></sc-if></div></sc-if>
+<sc-if value="{{noComment}}" hint-placeholder-val="{{yes}}"><button type="button" style="flex-shrink: 0; width: 100%; box-sizing: border-box; display: flex; gap: 12px; align-items: center; min-height: 56px; padding: 0 14px; border: 1px solid var(--outline); border-radius: var(--radius-md); background: transparent; color: var(--primary); font: inherit; text-align: left; cursor: pointer;" onClick="{{openComment}}"><span class="m-ic" aria-hidden="true">edit_note</span><span style="font-size: 15px; line-height: 20px; font-weight: 600;">Добавить комментарий</span></button></sc-if>
+<sc-if value="{{isInProgress}}" hint-placeholder-val="{{no}}"><div style="display: flex; justify-content: center;"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant);" onClick="{{openCancel}}"><span>Отменить поездку</span></button></div></sc-if>
 </div></div>
 <div class="m-actionbar">
 <sc-if value="{{canStart}}" hint-placeholder-val="{{yes}}"><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{start}}">Поехали</x-import></sc-if><sc-if value="{{startBusy}}" hint-placeholder-val="{{no}}"><p class="body-md" style="margin: 0; display: flex; gap: 8px; align-items: flex-start; color: var(--on-surface-variant);"><span class="m-ic" aria-hidden="true" style="color: var(--primary); flex: none;">info</span><span>В работе задание №{{busy.num}}. Начать это можно, когда №{{busy.num}} будет выполнено или пропущено.</span></p><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" disabled="{{yes}}">Поехали</x-import></sc-if>
@@ -1787,7 +1788,7 @@ sc-if,sc-for{display:contents}
 
 <sc-if value="{{toast}}" hint-placeholder-val="{{no}}">
 <div class="m-snack-dock" style="position: absolute; left: 0; right: 0; bottom: {{toastBottom}};">
-<x-import component-from-global-scope="Mml.Snackbar" action="{{toastAction}}" on-action="{{toastUndo}}">{{toast}}</x-import>
+<x-import component-from-global-scope="Mml.Snackbar">{{toast}}</x-import>
 </div>
 </sc-if>
 </div>
@@ -1890,7 +1891,7 @@ class Component extends DCLogic {
     // Ушли с вкладки «МЛ» — при возврате список снова сверху, номер в шапке не нужен
     else if (this.state.mlNumShown && (prevState.tab !== this.state.tab || prevState.screen !== this.state.screen)) this.setState({ mlNumShown: false });
   }
-  say(text, action, undo) { var self = this; this._undo = undo || null; this.setState({ toast: text, toastAction: action || null }); clearTimeout(this._t); this._t = setTimeout(function () { self.setState({ toast: null, toastAction: null }); }, action ? 6000 : 2600); }
+  say(text) { var self = this; this.setState({ toast: text }); clearTimeout(this._t); this._t = setTimeout(function () { self.setState({ toast: null }); }, 2600); }
   renderVals() {
     var s = this.state, self = this;
     var info = function (t) { return Object.assign({ status: 'not-started' }, s.st[t.id] || {}); };
@@ -2052,7 +2053,7 @@ class Component extends DCLogic {
       closeSheet: function () { self.setState({ sheet: null }); },
       finish: function () { if (cur.add && add !== 'not-done') self.setState({ sheet: 'finish' }); else self.confirmFinish(cur); },
       confirmFinish: function () { self.confirmFinish(cur); },
-      cancelTrip: function () { var a = Object.assign({}, s.adds); delete a[cur.id]; self.setState({ st: setSt(cur.id, { status: 'not-started' }), sheet: null, marks: {}, reg: null, adds: a, log: push(cur.id, 'Отменил поездку') }); self.say('Поездка на задание №' + cur.num + ' отменена. Отметки сброшены'); },
+      cancelTrip: function () { var a = Object.assign({}, s.adds); delete a[cur.id]; self.setState({ st: setSt(cur.id, { status: 'not-started' }), sheet: null, marks: {}, reg: null, adds: a, log: push(cur.id, 'Отменил поездку') }); },
       problemTitle: s.problemFor === 'add' ? 'Почему доп. задание не выполнено?' : 'Почему не удалось доставить?',
       problemText: s.problemFor === 'add' ? 'Задание №' + cur.num + ' · «Отдать 3 товара». Основное задание останется в работе.' : 'Задание №' + cur.num + ' · ' + cur.address + '.' + (cur.add ? ' Доп. задания получат ту же причину.' : ''),
       problemAction: s.problemFor === 'add' ? 'Отметить невыполненным' : 'Пропустить задание',
@@ -2066,12 +2067,10 @@ class Component extends DCLogic {
       },
       hasComment: !!s.comments[cur.id], noComment: !s.comments[cur.id], commentText: s.comments[cur.id] || '', four: 4,
       commentDraft: s.comments[cur.id] || 'Аптека закрыта на обед до 14:00, оставил у охраны',
-      showTextRow: !s.comments[cur.id] || cur.status === 'in-progress', textRowJustify: !s.comments[cur.id] && cur.status === 'in-progress' ? 'space-between' : 'center',
       noteTop: !!(cur.desc || cur.comment) && cur.status !== 'in-progress', noteBottom: !!(cur.desc || cur.comment) && cur.status === 'in-progress',
-      deleteComment: function () { var old = s.comments[cur.id], id = cur.id, c = Object.assign({}, s.comments); delete c[id]; self.setState({ sheet: null, comments: c, log: push(id, 'Удалил комментарий') }); self.say('Комментарий удалён', 'Вернуть', function () { var r = Object.assign({}, self.state.comments); r[id] = old; self.setState({ comments: r }); }); },
-      toastAction: s.toastAction || null, toastUndo: function () { var u = self._undo; clearTimeout(self._t); self._undo = null; self.setState({ toast: null, toastAction: null }); if (u) u(); },
+      deleteComment: function () { var id = cur.id, c = Object.assign({}, s.comments); delete c[id]; self.setState({ sheet: null, comments: c, log: push(id, 'Удалил комментарий') }); },
       openComment: function () { self.setState({ sheet: 'comment' }); },
-      saveComment: function () { var c = Object.assign({}, s.comments); c[cur.id] = 'Аптека закрыта на обед до 14:00, оставил у охраны'; self.setState({ sheet: null, comments: c, log: push(cur.id, 'Добавил комментарий') }); self.say('Комментарий сохранён'); },
+      saveComment: function () { var c = Object.assign({}, s.comments); c[cur.id] = 'Аптека закрыта на обед до 14:00, оставил у охраны'; self.setState({ sheet: null, comments: c, log: push(cur.id, 'Добавил комментарий') }); },
       // Доп. задание
       goAdd: function () { self.setState({ screen: 'add', sheet: null }); },
       addBadge: add === 'not-done' ? 'add-not-done' : add === 'done' ? 'add-done' : 'add-unmarked',
@@ -2087,21 +2086,21 @@ class Component extends DCLogic {
       cases: cases, plan: plan, deliv: deliv,
       unmarkedText: orders.length - marked ? 'Без отметки считаем переданными' : 'Все заказы отмечены',
       saveLabel: cases === plan ? 'Сохранить' : 'Сохранить и указать причину',
-      savePlaces: function () { if (cases === plan) { self.setState({ screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan) }); self.say('Места сохранены'); } else self.setState({ sheet: 'partial', partCause: null }); },
+      savePlaces: function () { if (cases === plan) { self.setState({ screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan) }); } else self.setState({ sheet: 'partial', partCause: null }); },
       sheetPartial: s.sheet === 'partial',
       partTitle: 'Передано ' + cases + ' ' + plural(cases, ['место', 'места', 'мест']) + ' из ' + plan,
       partText: 'Не ' + (miss.length === 1 && /^1 /.test(miss[0]) ? 'передан' : 'переданы') + ' ' + miss.join(' и ') + '. Укажите причину — без неё недостачу не сохранить.',
       partRows: [{ icon: 'package_2', label: 'Обычные места', value: reg + ' из ' + regPlan }].concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length }] : []).concat([{ label: 'Всего мест', value: cases + ' из ' + plan, total: true }]),
       partCauses: PART_CAUSES.map(function (c) { return Object.assign({}, c, { checked: s.partCause === c.id, pick: function () { self.setState({ partCause: c.id }); } }); }),
       partNone: !s.partCause,
-      confirmPartial: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan + ' с причиной') }); self.say('Места сохранены: ' + cases + ' из ' + plan); },
+      confirmPartial: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan + ' с причиной') }); },
       // Очередь
       goOutbox: function () { self.setState({ screen: 'outbox', sheet: null, outboxFrom: s.screen === 'outbox' ? s.outboxFrom : s.screen }); },
       outboxBack: function () { self.setState({ screen: s.outboxFrom === 'outbox' || !s.outboxFrom ? 'route' : s.outboxFrom }); },
       rejected: rejected.map(titled), rejectedCount: rejected.length, hasRejected: rejected.length > 0,
       pendingList: pendingList.map(titled), pending: pending, hasPending: pending > 0,
       outboxFull: s.log.length > 0, outboxEmpty: s.log.length === 0,
-      sendNow: function () { if (s.offline) { self.say('Нет сети. Отправим, когда связь появится'); return; } self.setState({ log: rejected }); self.say('Отправлено'); },
+      sendNow: function () { if (s.offline) { self.say('Нет сети. Отправим, когда связь появится'); return; } self.setState({ log: rejected }); },
       // Шторки
       sheetProblem: s.sheet === 'problem', sheetCancel: s.sheet === 'cancel', sheetCancelAuto: s.sheet === 'cancelAuto', sheetFinish: s.sheet === 'finish', sheetBusy: s.sheet === 'busy',
       sheetComment: s.sheet === 'comment', sheetUpdated: s.sheet === 'updated', sheetFinished: s.sheet === 'finished', sheetTermo: s.sheet === 'termo', sheetTheme: s.sheet === 'theme', sheetLogout: s.sheet === 'logout',
@@ -2114,7 +2113,6 @@ class Component extends DCLogic {
     var log = s.log.concat([{ num: cur.id, action: 'Передал груз', time: '14:5' + (s.log.length % 10) }]);
     var left = TASKS.filter(function (t) { var x = st[t.id]; return !x || x.status === 'not-started' || x.status === 'in-progress'; }).length;
     this.setState({ st: st, log: log, sheet: left ? null : 'finished', screen: 'route', tab: 'tasks', marks: {}, reg: null });
-    if (left) this.say('Задание №' + cur.num + ' выполнено');
   }
 }
 </script><script>// Оболочка прототипа вне холста: рамка телефона, сценарии и тема вместо твиков холста.
