@@ -1724,7 +1724,7 @@ sc-if,sc-for{display:contents}
 
 <sc-if value="{{sheetComment}}" hint-placeholder-val="{{no}}">
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
-<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Ваш комментарий к заданию №{{cur.num}}" text="Увидит диспетчер. Сохранится без сети.">
+<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Ваш комментарий к заданию №{{cur.num}}" text="Увидит диспетчер.">
 <x-import component-from-global-scope="Mml.TextField" id="comment" label="Комментарий" value="Аптека закрыта на обед до 14:00, оставил у охраны"></x-import>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{saveComment}}">Сохранить</x-import>
 </x-import>
