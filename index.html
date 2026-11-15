@@ -418,7 +418,8 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-chip span:last-child { color: var(--on-surface-variant); }
 .m-chip .m-ic { color: var(--on-surface-variant); }
 .m-chip .m-chip-label { color: var(--on-surface-variant); }
-.m-chip span.m-chip-extra { color: var(--error); font-weight: 600; }
+.m-chip { flex-wrap: wrap; max-width: 100%; }
+.m-chip span.m-chip-extra { color: var(--error); font-weight: 600; white-space: nowrap; }
 
 /* ---------- StatusBadge ---------- */
 .m-status { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 4px 8px 4px 6px; box-sizing: border-box; border-radius: var(--radius-xs); font-size: 13px; line-height: 16px; font-weight: 600; }
@@ -664,7 +665,7 @@ button.m-marker { font-family: inherit; line-height: 1; cursor: pointer; }
 .m-menu { position: absolute; top: 52px; right: 8px; z-index: 5; min-width: 220px; padding: 8px 0; background: var(--surface-container); border-radius: var(--radius-sm); box-shadow: var(--shadow-float); border: 1px solid var(--outline-variant); }
 .m-menu-item { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; font-size: 16px; line-height: 24px; }
 /* Карточка «Сейчас», закреплённая под шапкой при прокрутке списка */
-.m-now-sticky { flex-shrink: 0; padding: 4px 16px 12px; background: var(--surface); box-shadow: 0 6px 8px -6px rgba(19, 34, 32, 0.25); position: relative; z-index: 1; }</style><style>html, body { margin: 0; height: 100%; }
+.m-now-sticky { flex-shrink: 0; padding: 16px 16px 12px; background: var(--surface); box-shadow: 0 6px 8px -6px rgba(19, 34, 32, 0.25); position: relative; z-index: 1; }</style><style>html, body { margin: 0; height: 100%; }
 html { --sh-bg: #ecebef; --sh-fg: #1c1b1f; --sh-mute: #5f5d66; --sh-line: #cfcdd6; --sh-card: #fff; --sh-acc: #1f5fbf; }
 html[data-shell="dark"] { --sh-bg: #141317; --sh-fg: #e6e1e9; --sh-mute: #a8a4b0; --sh-line: #3a3840; --sh-card: #1f1e23; --sh-acc: #8fb4ff; }
 body { background: var(--sh-bg); color: var(--sh-fg); font-family: var(--font-sans); }
@@ -1416,7 +1417,7 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.IconButton" icon="map" label="Задания на карте" on-click="{{goMap}}"></x-import>
 </header>
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
-<sc-if value="{{routeOpen}}" hint-placeholder-val="{{yes}}"><div style="padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 12px;">
+<sc-if value="{{routeOpen}}" hint-placeholder-val="{{yes}}"><div style="padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 16px;">
 <x-import component-from-global-scope="Mml.Button" variant="tonal" block="{{yes}}">Найти задание</x-import>
 <sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}">
 <section class="m-now" aria-label="{{nowLabel}}">
