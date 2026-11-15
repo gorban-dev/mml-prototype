@@ -1090,7 +1090,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     'not-started': ['neutral', 'radio_button_unchecked', 'Не начато'],
     'in-progress': ['progress', 'local_shipping', 'В работе'],
     'done': ['done', 'check_circle', 'Выполнено'],
-    'done-auto': ['done', 'auto_mode', 'Выполнено автоматически'],
+    'done-auto': ['done', 'auto_mode', 'Подтверждено автоматически'],
     'skipped': ['error', 'block', 'Пропущено'],
     'add-done': ['done', 'check_circle', 'Выполнено'],
     'add-not-done': ['error', 'cancel', 'Не выполнено'],
@@ -1552,7 +1552,7 @@ sc-if,sc-for{display:contents}
 </div>
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="padding: 16px; display: flex; flex-direction: column; gap: {{taskGap}};">
 <div style="display: flex; flex-direction: column; gap: 6px;">
-<div style="display: flex; gap: 8px; align-items: center;"><x-import component-from-global-scope="Mml.StatusBadge" status="{{cur.status}}" detail="{{cur.badgeDetail}}"></x-import><span style="font-size: 14px; line-height: 20px; color: var(--on-surface-variant);">Задание №{{cur.num}}</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center;"><x-import component-from-global-scope="Mml.StatusBadge" status="{{cur.status}}" detail="{{cur.badgeDetail}}"></x-import><span style="font-size: 14px; line-height: 20px; color: var(--on-surface-variant); white-space: nowrap;">Задание №{{cur.num}}</span></div>
 <h1 class="title-lg" style="margin: 0; text-wrap: balance;">{{cur.address}}</h1>
 <sc-if value="{{isNotStarted}}" hint-placeholder-val="{{yes}}"><p class="body-md" style="margin: 0; color: var(--on-surface-variant);">{{cur.pharmacy}}</p></sc-if>
 <sc-if value="{{isInProgress}}" hint-placeholder-val="{{no}}"><p class="body-md" style="margin: 0; color: var(--on-surface-variant);">{{cur.pharmacy}}</p></sc-if>
@@ -1594,7 +1594,7 @@ sc-if,sc-for{display:contents}
 <div class="m-topbar-title"><h1>Доп. задание</h1><p>Задание №{{cur.num}} · {{cur.place}}</p></div>
 </header>
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px;">
-<div style="display: flex; gap: 8px; align-items: center;"><x-import component-from-global-scope="Mml.StatusBadge" status="{{addBadge}}" label="{{addLabel}}"></x-import><span class="body-md" style="color: var(--on-surface-variant);">{{addHint}}</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center;"><x-import component-from-global-scope="Mml.StatusBadge" status="{{addBadge}}" label="{{addLabel}}"></x-import><span class="body-md" style="color: var(--on-surface-variant);">{{addHint}}</span></div>
 <x-import component-from-global-scope="Mml.GoodsGroup" action="give" items="{{goods}}"></x-import>
 <x-import component-from-global-scope="Mml.GoodsGroup" items="{{goods2}}"></x-import>
 </div></div>
@@ -1860,7 +1860,7 @@ var THEMES = [
 var GOODS = [{ name: 'Нурофен таб. п/о 200мг №20', series: 'A12345', qty: 2, price: 245 }, { name: 'Витамин D3 капли 10мл', series: 'B77001', qty: 1, price: 410.5 }];
 var GOODS2 = [{ name: 'Аква Марис спрей 30мл', series: 'C55210', qty: 1, price: 389 }];
 var PINS = [['36%', '52%'], ['70%', '24%'], ['78%', '44%'], ['22%', '30%'], ['56%', '70%'], ['30%', '76%'], ['84%', '66%'], ['48%', '36%'], ['14%', '58%'], ['64%', '50%'], ['44%', '16%'], ['20%', '86%'], ['74%', '82%'], ['88%', '30%']];
-var STATE_TEXT = { 'in-progress': 'В работе', 'not-started': 'Не начато', skipped: 'Пропущено', done: 'Выполнено', 'done-auto': 'Выполнено автоматически' };
+var STATE_TEXT = { 'in-progress': 'В работе', 'not-started': 'Не начато', skipped: 'Пропущено', done: 'Выполнено', 'done-auto': 'Подтверждено автоматически' };
 function plural(n, f) { var a = Math.abs(n) % 100, b = a % 10; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; }
 function toMin(at) { var p = String(at || '0:0').split(':'); return +p[0] * 60 + +p[1]; }
 // Номера подряд от трёх — диапазоном: «1–3, 5, 6, 8–17»
