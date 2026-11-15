@@ -418,8 +418,7 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-chip span:last-child { color: var(--on-surface-variant); }
 .m-chip .m-ic { color: var(--on-surface-variant); }
 .m-chip .m-chip-label { color: var(--on-surface-variant); }
-.m-chip { flex-wrap: wrap; max-width: 100%; }
-.m-chip span.m-chip-extra { color: var(--error); font-weight: 600; white-space: nowrap; }
+.m-chip span.m-chip-alert-text { color: var(--error); font-weight: 600; }
 
 /* ---------- StatusBadge ---------- */
 .m-status { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 4px 8px 4px 6px; box-sizing: border-box; border-radius: var(--radius-xs); font-size: 13px; line-height: 16px; font-weight: 600; }
@@ -1076,9 +1075,13 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- CountChip ---------- */
   function CountChip(p) {
-    // alert — красная часть того же количества: «8 Аптека.ру · 2 отменено» (отменённые входят в заказы Аптека.ру). Значок серый
-    return h('span', { className: 'm-chip' }, p.icon ? h(Icon, { name: p.icon, small: true }) : null,
-      h('b', null, p.value), h('span', { className: 'm-chip-label' }, p.label), p.alert ? h('span', { className: 'm-chip-extra' }, '· ' + p.alert) : null);
+    // alert — отменённые заказы Аптека.ру: отдельный чип «2 отменено» сразу за основным (15.11.2026), чтобы красная
+    // подпись не переносилась внутри чипа. Значок и фон серые, красный только текст
+    var chip = h('span', { className: 'm-chip' }, p.icon ? h(Icon, { name: p.icon, small: true }) : null,
+      h('b', null, p.value), h('span', { className: 'm-chip-label' }, p.label));
+    if (!p.alert) return chip;
+    return h(React.Fragment, null, chip,
+      h('span', { className: 'm-chip m-chip-alert' }, h(Icon, { name: 'block', small: true }), h('span', { className: 'm-chip-alert-text' }, p.alert)));
   }
 
   /* ---------- StatusBadge ---------- */
