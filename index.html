@@ -1445,7 +1445,7 @@ sc-if,sc-for{display:contents}
 <sc-if value="{{hasSkipped}}" hint-placeholder-val="{{no}}">
 <div class="m-section" style="padding-top: 20px;"><span>ПРОПУЩЕННЫЕ · {{skipped}}</span></div>
 <sc-for list="{{skippedList}}" as="t" hint-placeholder-count="1">
-<x-import component-from-global-scope="Mml.TaskListItem" num="{{t.num}}" state="skipped" detail="{{t.at}}" flags="{{t.listFlags}}" address="{{t.address}}" pharmacy="{{t.pharmacy}}" time="{{t.close}}" counts="{{t.counts}}" on-click="{{t.open}}"></x-import>
+<x-import component-from-global-scope="Mml.TaskListItem" num="{{t.num}}" state="skipped" detail="{{t.at}}" flags="{{t.listFlags}}" address="{{t.address}}" pharmacy="{{t.pharmacy}}" counts="{{t.counts}}" on-click="{{t.open}}"></x-import>
 </sc-for>
 </sc-if>
 <sc-if value="{{hasDone}}" hint-placeholder-val="{{no}}">
