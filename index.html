@@ -1782,7 +1782,7 @@ sc-if,sc-for{display:contents}
 <sc-if value="{{sheetFinish}}" hint-placeholder-val="{{no}}">
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="{{finishTitle}}" text="{{finishText}}">
-<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{confirmFinish}}">Да, выполнено</x-import>
+<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{confirmFinish}}">{{finishOk}}</x-import>
 <x-import component-from-global-scope="Mml.Button" variant="text" block="{{yes}}" on-click="{{goAdd}}">{{finishOpen}}</x-import>
 </x-import>
 </div>
@@ -2146,7 +2146,16 @@ class Component extends DCLogic {
       closeSheet: function () { self.setState({ sheet: null }); },
       finish: function () { if (cur.add && addSrc.some(function (a) { return !addMarks[a.n]; })) self.setState({ sheet: 'finish' }); else self.confirmFinish(cur); },
       finishTitle: addSrc.length > 1 ? 'Доп. задания выполнены?' : 'Доп. задание выполнено?',
-      finishText: addSrc.length > 1 ? 'Выполнятся ' + addSrc.filter(function (a) { return !addMarks[a.n]; }).length + ' из ' + addSrc.length + '. Если нет — отметьте «Не выполнено»: после «Передал груз» не изменить.' : 'Отдать 3 товара · 900,50 ₽. Если нет — отметьте «Не выполнено»: после «Передал груз» не изменить.',
+      finishText: (function () {
+        var tail = 'Если нет — отметьте «Не выполнено»: после «Передал груз» не изменить.';
+        if (addSrc.length === 1) return 'Отдать 3 товара · 900,50 ₽. ' + tail;
+        var left = addSrc.filter(function (a) { return !addMarks[a.n]; });
+        if (left.length === addSrc.length) return 'Выполнятся все ' + left.length + '. ' + tail;
+        var nums = left.map(function (a) { return '№' + a.n; });
+        var list = nums.length <= 3 ? ': ' + (nums.length > 1 ? nums.slice(0, -1).join(', ') + ' и ' + nums[nums.length - 1] : nums[0]) : '';
+        return 'Выполнятся ' + left.length + ' из ' + addSrc.length + list + '. ' + tail;
+      })(),
+      finishOk: addSrc.length > 1 ? 'Да, выполнены' : 'Да, выполнено',
       finishOpen: addSrc.length > 1 ? 'Открыть доп. задания' : 'Открыть доп. задание',
       confirmFinish: function () { self.confirmFinish(cur); },
       cancelTrip: function () { var a = Object.assign({}, s.adds); delete a[cur.id]; self.setState({ st: setSt(cur.id, { status: 'not-started' }), sheet: null, marks: {}, reg: null, adds: a, log: push(cur.id, 'Отменил поездку') }); },
