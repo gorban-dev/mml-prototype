@@ -1223,11 +1223,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     var v = p.value, min = p.min != null ? p.min : 0, max = p.max;
     var diff = p.plan != null ? v - p.plan : 0;
     var tone = p.error ? 'error' : diff !== 0 ? 'warn' : 'ok';
-    var help = p.error ? p.error
-      : p.plan == null ? null
-      : diff < 0 ? 'Меньше плана на ' + (-diff) + ' — нужна причина'
-      : diff > 0 ? 'Больше плана на ' + diff + ' — нужна причина'
-      : 'Совпадает с планом';
+    // Статус плана и «нужна причина» — в итоге экрана, не под полем: под полем только ошибка ввода (MML-65)
+    var help = p.error || null;
     return h('div', { className: cx('m-stepper', 'm-stepper-' + tone) },
       h('label', { className: 'm-stepper-title', htmlFor: p.id }, p.label),
       h('div', { className: 'm-stepper-row' },
