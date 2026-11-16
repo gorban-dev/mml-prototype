@@ -2200,7 +2200,7 @@ class Component extends DCLogic {
       addShowHint: !(addOpenTask && addSrc.length > 1 && addSrc.every(function (a) { return addMarks[a.n]; })),
       addHintNo: addOpenTask && addSrc.some(function (a) { return addMarks[a.n]; }) && addSrc.length > 1,
       addHintBold: 'Не выполнено: ' + addSrc.filter(function (a) { return addMarks[a.n]; }).length + ' из ' + addSrc.length + '.',
-      addHintText: cur.status === 'not-started' ? 'Отметить можно после «Поехали»' : !addOpenTask ? addNote(cur) : addSrc.length > 1 ? (addSrc.some(function (a) { return addMarks[a.n]; }) ? 'Остальные — с заданием' : 'Все выполнятся с заданием') : (addMarks[1] ? 'Не засчитается с заданием' : 'Выполнится с заданием'),
+      addHintText: cur.status === 'not-started' ? 'Отметить можно после «Поехали»' : !addOpenTask ? addNote(cur) : addSrc.length > 1 ? (addSrc.some(function (a) { return addMarks[a.n]; }) ? 'Выполнятся с заданием: ' + addSrc.filter(function (a) { return !addMarks[a.n]; }).length : 'Все выполнятся с заданием') : (addMarks[1] ? 'Не засчитается с заданием' : 'Выполнится с заданием'),
       addItems: addSrc.map(function (a) {
         var st = cur.status, mark = st === 'skipped' ? (cur.cause || 'x') : addMarks[a.n], closedT = st !== 'in-progress' && st !== 'not-started';
         var isNo = !!mark && (addOpenTask || closedT);
