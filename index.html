@@ -1388,6 +1388,26 @@ sc-if,sc-for{display:contents}
 .pc-col{display:flex;flex-direction:column;gap:8px}
 .pc-col>*,.pc-col>sc-for>*{flex-shrink:0}
 .pc-label{margin:8px 0 0;color:var(--on-surface-variant)}
+.pl-under{padding:0 16px 8px;font-size:14px;line-height:20px;color:var(--on-surface-variant);background:var(--surface)}
+.pl-info{margin:-12px -12px -12px 0}
+.pl-dash{margin:8px 16px 4px;padding:12px;border-radius:var(--radius-lg);background:var(--surface-container);display:flex;flex-direction:column;gap:10px}
+.pl-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 4px}
+.pl-head b{display:block;font-size:22px;line-height:28px;font-variant-numeric:tabular-nums}
+.pl-line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px 4px}
+.pl-line b{display:block;font-size:17px;line-height:24px;font-variant-numeric:tabular-nums}
+.pl-st{display:block;font-size:14px;line-height:20px;font-weight:600}
+.pl-ok{color:var(--success)}
+.pl-warn{color:var(--warning)}
+.pl-muted{color:var(--on-surface-variant);font-weight:400}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.pl-tile{padding:10px;border-radius:var(--radius-md);background:var(--surface);display:flex;flex-direction:column;gap:2px}
+.pl-tile .m-ic{color:var(--on-surface-variant)}
+.pl-tile span.l{font-size:14px;line-height:18px;color:var(--on-surface-variant)}
+.pl-tile b{font-size:18px;line-height:24px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pl-tile b.bad{color:var(--error)}
+.pl-tile small{font-size:12px;line-height:16px;color:var(--on-surface-variant)}
+.pl-help{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:20px}
+.pc-note{font-size:14px;line-height:20px;color:var(--on-surface-variant);margin:0}
 </style>
 </helmet>
 <div data-theme="{{theme}}" style="width: 390px; height: 844px; display: flex; flex-direction: column; position: relative; background: var(--surface); color: var(--on-surface); font-family: var(--font-sans); overflow: hidden;">
@@ -1568,7 +1588,7 @@ sc-if,sc-for{display:contents}
 <sc-if value="{{isInProgress}}" hint-placeholder-val="{{no}}"><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{taskRows}}"></x-import></sc-if>
 <sc-if value="{{noteBottom}}" hint-placeholder-val="{{no}}"><div class="m-dnote" role="note"><span class="m-ic m-ic-fill" aria-hidden="true">chat</span><div class="m-dnote-body"><sc-if value="{{cur.desc}}" hint-placeholder-val="{{yes}}"><span class="m-dnote-title">Описание задания<sc-if value="{{noteChanged}}" hint-placeholder-val="{{no}}"> <span class="m-status m-status-warning" style="margin-left: 6px; vertical-align: 1px;">Изменено в 12:40</span></sc-if></span><p class="m-dnote-text">{{cur.desc}}</p></sc-if><sc-if value="{{cur.comment}}" hint-placeholder-val="{{yes}}"><span class="m-dnote-title" style="{{commentTitleStyle}}">Комментарий диспетчера</span><p class="m-dnote-text">{{cur.comment}}.</p></sc-if></div></div></sc-if>
 <sc-if value="{{notInProgress}}" hint-placeholder-val="{{yes}}"><section aria-label="Места и вес" style="flex-shrink: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5em, 1fr)); gap: 1px; border: 1px solid var(--outline-variant); border-radius: var(--radius-md); overflow: hidden; background: var(--outline-variant);"><div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; background: var(--surface-container);"><b style="font-size: 20px; line-height: 26px; font-weight: 600; font-variant-numeric: tabular-nums;">{{tp.total}}</b><span style="font-size: 14px; line-height: 18px; color: var(--on-surface-variant);">{{tp.totalLabel}}</span></div><div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; background: var(--surface-container);"><b style="font-size: 20px; line-height: 26px; font-weight: 600; font-variant-numeric: tabular-nums;">{{tp.kg}}</b><span style="font-size: 14px; line-height: 18px; color: var(--on-surface-variant);">{{tp.kgLabel}}</span></div></section><div class="m-section" style="padding: 12px 0 0;"><span>СОСТАВ МЕСТ</span></div><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{tp.places}}"></x-import><sc-if value="{{tp.hasExtra}}" hint-placeholder-val="{{yes}}"><div class="m-section" style="padding: 12px 0 0;"><span>ЕЩЁ В ЗАДАНИИ</span></div><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{tp.extra}}"></x-import></sc-if></sc-if>
-<sc-if value="{{showHours}}" hint-placeholder-val="{{yes}}"><div class="m-section" style="padding: 12px 0 0;"><span>ОБ АПТЕКЕ</span></div><div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px;"><div><div style="font-size: 15px;">{{cur.contactName}}</div><a href="tel:{{cur.phone}}" aria-label="Позвонить: {{cur.contactName}}" style="display: inline-flex; gap: 8px; align-items: center; min-height: 48px; color: var(--primary); font-size: 15px; font-weight: 600; text-decoration: none;"><span class="m-ic" aria-hidden="true" style="font-size: 20px;">call</span>{{cur.phone}}</a></div><sc-if value="{{notInProgress}}" hint-placeholder-val="{{yes}}"><div style="display: flex; gap: 8px; align-items: center;"><span class="m-ic" aria-hidden="true" style="font-size: 18px; color: var(--on-surface-variant);">description</span><span>Бумажные документы</span></div></sc-if><div style="display: flex; flex-direction: column; gap: 4px;"><span style="color: var(--on-surface-variant);">Примечания к аптеке</span><span style="font-size: 15px;">{{cur.notes}}</span></div><div style="color: var(--on-surface-variant); font-variant-numeric: tabular-nums;">Код пункта выдачи {{cur.code}} · Код ПД {{cur.pd}}</div></div></sc-if>
+<sc-if value="{{showHours}}" hint-placeholder-val="{{yes}}"><div class="m-section" style="padding: 12px 0 0;"><span>ОБ АПТЕКЕ</span></div><div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px;"><div><div style="font-size: 15px;">{{cur.contactName}}</div><a href="tel:{{cur.phone}}" aria-label="Позвонить: {{cur.contactName}}" style="display: inline-flex; gap: 8px; align-items: center; min-height: 48px; color: var(--primary); font-size: 15px; font-weight: 600; text-decoration: none;"><span class="m-ic" aria-hidden="true" style="font-size: 20px;">call</span>{{cur.phone}}</a></div><div style="display: flex; gap: 8px; align-items: center;"><span class="m-ic" aria-hidden="true" style="font-size: 18px; color: var(--on-surface-variant);">description</span><span>Бумажные документы</span></div><div style="display: flex; flex-direction: column; gap: 4px;"><span style="color: var(--on-surface-variant);">Примечания к аптеке</span><span style="font-size: 15px;">{{cur.notes}}</span></div><div style="color: var(--on-surface-variant); font-variant-numeric: tabular-nums;">Код пункта выдачи {{cur.code}} · Код ПД {{cur.pd}}</div></div></sc-if>
 <sc-if value="{{hasComment}}" hint-placeholder-val="{{no}}"><button type="button" onClick="{{openComment}}" style="width: 100%; box-sizing: border-box; display: flex; gap: 12px; align-items: center; min-height: 56px; padding: 10px 14px; border: 1px solid var(--outline); border-radius: var(--radius-md); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;"><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font-size: 14px; line-height: 20px; font-weight: 600;">Ваш комментарий</span><span style="display: block; font-size: 13px; line-height: 18px; color: var(--on-surface-variant);">Видит диспетчер</span><span style="display: block; margin-top: 4px; font-size: 15px; line-height: 20px;">{{commentText}}</span></span><span class="m-ic" aria-hidden="true" style="color: var(--primary);">edit</span></button></sc-if>
 <sc-if value="{{noComment}}" hint-placeholder-val="{{yes}}"><button type="button" style="flex-shrink: 0; width: 100%; box-sizing: border-box; display: flex; gap: 12px; align-items: center; min-height: 56px; padding: 0 14px; border: 1px solid var(--outline); border-radius: var(--radius-md); background: transparent; color: var(--primary); font: inherit; text-align: left; cursor: pointer;" onClick="{{openComment}}"><span class="m-ic" aria-hidden="true">edit_note</span><span style="font-size: 15px; line-height: 20px; font-weight: 600;">Добавить комментарий</span></button></sc-if>
 <sc-if value="{{isInProgress}}" hint-placeholder-val="{{no}}"><div style="display: flex; justify-content: center;"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant);" onClick="{{openCancel}}"><span>Отменить поездку</span></button></div></sc-if>
@@ -1610,31 +1630,34 @@ sc-if,sc-for{display:contents}
 <header class="m-topbar">
 <x-import component-from-global-scope="Mml.IconButton" icon="arrow_back" label="Назад" on-click="{{goTask}}"></x-import>
 <div class="m-topbar-title"><h1>Передача мест</h1><p>Задание №{{cur.num}} · {{cur.place}}</p></div>
-<x-import component-from-global-scope="Mml.IconButton" icon="barcode_scanner" label="Сканировать места"></x-import>
-<x-import component-from-global-scope="Mml.IconButton" icon="keyboard" label="Ввести штрихкод вручную"></x-import>
+<sc-if value="{{hasBarcodes}}" hint-placeholder-val="{{yes}}"><x-import component-from-global-scope="Mml.IconButton" icon="barcode_scanner" label="Сканировать места"></x-import>
+<x-import component-from-global-scope="Mml.IconButton" icon="keyboard" label="Ввести штрихкод вручную"></x-import></sc-if>
 </header>
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
-<div class="m-section"><span>ОБЫЧНЫЕ МЕСТА · БЕЗ ШТРИХКОДА</span></div>
+<sc-if value="{{plMulti}}" hint-placeholder-val="{{yes}}"><div class="pl-dash">
+<div class="pl-head"><span role="status" aria-live="polite"><b>Передано {{cases}} из {{plan}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div>
+<div class="pl-grid"><sc-for list="{{plTiles}}" as="t" hint-placeholder-count="3"><div class="pl-tile"><span class="m-ic m-ic-sm" aria-hidden="true">{{t.icon}}</span><span class="l">{{t.label}}</span><b class="{{t.cls}}">{{t.value}}</b><sc-if value="{{t.kom}}" hint-placeholder-val="{{no}}"><small>вне плана</small></sc-if></div></sc-for></div>
+</div></sc-if>
+<sc-if value="{{plSingle}}" hint-placeholder-val="{{no}}"><div class="pl-line"><span role="status" aria-live="polite"><b>{{plSingleTitle}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div></sc-if>
+<sc-if value="{{hasReg}}" hint-placeholder-val="{{yes}}"><div class="m-section"><span>ОБЫЧНЫЕ МЕСТА</span></div>
 <x-import component-from-global-scope="Mml.Stepper" id="cases" label="Передано обычных мест" value="{{reg}}" max="{{regPlan}}" plan="{{regPlan}}" on-change="{{setReg}}"></x-import>
+<div class="pl-under">{{regNote}}</div></sc-if>
 <sc-if value="{{hasOrders}}" hint-placeholder-val="{{yes}}">
-<div class="m-section"><span>ЗАКАЗЫ АПТЕКА.РУ</span><span>Отмечено {{marked}} из {{ordersCount}}</span></div>
+<div class="m-section"><span>АПТЕКА.РУ</span></div>
+<div class="pl-under">Без отметки — передано</div>
 <sc-for list="{{orders}}" as="o" hint-placeholder-count="8">
 <x-import component-from-global-scope="Mml.OrderRow" number="{{o.number}}" place="{{o.place}}" barcode="{{o.barcode}}" price="{{o.price}}" mark="{{o.mark}}" on-mark="{{o.setMark}}"></x-import>
 </sc-for>
 </sc-if>
 <sc-if value="{{hasKom}}" hint-placeholder-val="{{yes}}">
-<div class="m-section"><span>КОМ ПО ПУНКТУ ДОСТАВКИ</span><span>Отмечено {{komMarked}} из {{komCount}}</span></div>
+<div class="m-section"><span>КОМ ПО ПУНКТУ ДОСТАВКИ</span></div>
 <sc-for list="{{kom}}" as="o" hint-placeholder-count="4">
 <x-import component-from-global-scope="Mml.OrderRow" number="{{o.number}}" place="{{o.place}}" barcode="{{o.barcode}}" mark="{{o.mark}}" on-mark="{{o.setMark}}"></x-import>
 </sc-for>
 </sc-if>
 </div></div>
 <div class="m-actionbar">
-<div style="display: flex; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 20px;">
-<span style="color: var(--on-surface-variant);">Обычные {{reg}} + Аптека.ру {{deliv}}<br>{{unmarkedText}}</span>
-<b style="font-variant-numeric: tabular-nums; white-space: nowrap;">{{cases}} из {{plan}}</b>
-</div>
-<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{savePlaces}}">{{saveLabel}}</x-import>
+<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" disabled="{{applyOff}}" on-click="{{savePlaces}}">{{applyLabel}}</x-import>
 </div>
 </div>
 </sc-if>
@@ -1675,11 +1698,34 @@ sc-if,sc-for{display:contents}
 <div class="pc-scroll">
 <div class="pc-col">
 <x-import component-from-global-scope="Mml.KeyValueTable" rows="{{partRows}}"></x-import>
-<p class="label-md pc-label">Причина недостачи</p>
+<p class="label-md pc-label">Почему передано меньше</p>
 <sc-for list="{{partCauses}}" as="c" hint-placeholder-count="8"><x-import component-from-global-scope="Mml.BottomSheet.Option" title="{{c.title}}" text="{{c.text}}" checked="{{c.checked}}" on-click="{{c.pick}}"></x-import></sc-for>
 </div>
 </div>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" disabled="{{partNone}}" on-click="{{confirmPartial}}">Сохранить с причиной</x-import>
+<x-import component-from-global-scope="Mml.Button" variant="text" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Исправить</x-import>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetPlacesOk}}" hint-placeholder-val="{{no}}">
+<div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
+<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="{{partTitle}}" text="Всё совпадает с планом. Проверьте и сохраните.">
+<div class="pc-col">
+<sc-if value="{{plMulti}}" hint-placeholder-val="{{yes}}"><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{partRows}}"></x-import></sc-if>
+<sc-if value="{{komNoteShown}}" hint-placeholder-val="{{no}}"><p class="pc-note">{{komNote}}</p></sc-if>
+</div>
+<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{confirmPlacesOk}}">Верно, сохранить</x-import>
+<x-import component-from-global-scope="Mml.Button" variant="text" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Исправить</x-import>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetPlacesHelp}}" hint-placeholder-val="{{no}}">
+<div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
+<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Как считаются места">
+<ul class="pl-help"><sc-for list="{{plHelp}}" as="h" hint-placeholder-count="5"><li>{{h}}</li></sc-for></ul>
+<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Понятно</x-import>
 </x-import>
 </div>
 </sc-if>
@@ -1920,14 +1966,15 @@ class Component extends DCLogic {
     var add = s.adds[cur.id] || (cur.status === 'done' || cur.status === 'done-auto' ? 'done' : cur.status === 'skipped' ? 'not-done' : null);
     // места
     var regPlan = cur.reg + cur.termo, reg = s.reg == null ? regPlan : s.reg;
-    var markFn = function (key) { return function (m) { var mk = Object.assign({}, s.marks); mk[key] = mk[key] === m ? null : m; self.setState({ marks: mk }); }; };
+    var markFn = function (key) { return function (m) { var mk = Object.assign({}, s.marks); mk[key] = mk[key] === m ? null : m; self.setState({ marks: mk, placesDirty: true }); }; };
     var orders = ORDERS.slice(0, cur.apt).map(function (o) { return Object.assign({ place: 1 }, o, { mark: s.marks[o.number] || null, setMark: markFn(o.number) }); });
     var kom = []; for (var k = 1; k <= cur.kom; k++) kom.push({ number: 'Док. 00-00458' + (70 + cur.num), place: k, barcode: '29000458' + (70 + cur.num) + '0' + k + '9', mark: s.marks['kom' + k] || null, setMark: markFn('kom' + k) });
     var marked = orders.filter(function (o) { return o.mark; }).length, komMarked = kom.filter(function (o) { return o.mark; }).length;
     var notDeliv = orders.filter(function (o) { return o.mark === 'not-delivered'; }).length, deliv = orders.length - notDeliv, cases = reg + deliv, plan = regPlan + orders.length;
+    var komOk = kom.filter(function (o) { return o.mark !== 'not-delivered'; }).length, plKinds = (regPlan ? 1 : 0) + (orders.length ? 1 : 0) + (kom.length ? 1 : 0);
     var miss = [];
     if (regPlan - reg > 0) miss.push((regPlan - reg) + ' ' + plural(regPlan - reg, ['обычное место', 'обычных места', 'обычных мест']));
-    if (notDeliv) miss.push(notDeliv + ' ' + plural(notDeliv, ['заказ', 'заказа', 'заказов']) + ' Аптека.ру');
+    if (notDeliv) miss.push(notDeliv + ' ' + plural(notDeliv, ['место', 'места', 'мест']) + ' Аптека.ру');
     // очередь
     var rejected = s.log.filter(function (e) { return e.rejected; }), pendingList = s.log.filter(function (e) { return !e.rejected; });
     var pending = pendingList.length;
@@ -1955,9 +2002,8 @@ class Component extends DCLogic {
       return { total: closed ? t.total + ' из ' + t.total : String(t.total), totalLabel: closed ? 'передано мест' : 'мест всего', kg: t.kg + ' кг', kgLabel: st === 'not-started' ? 'вес, без упаковки ' + Math.round(t.kg * 0.66) + ' кг' : 'вес', places: places, extra: extra, hasExtra: extra.length > 0 };
     };
     var taskRows = cur.status === 'in-progress'
-      ? [{ icon: 'inventory_2', label: 'Передача мест', note: (orders.length ? 'Аптека.ру: отмечено ' + marked + ' из ' + orders.length + ' ' + plural(orders.length, ['заказа', 'заказов', 'заказов']) + ', ✕ ' + (notDeliv || 'нет') : 'Без заказов Аптека.ру'), value: cases + ' из ' + plan, onClick: function () { self.setState({ screen: 'places' }); } }]
+      ? [{ icon: 'inventory_2', label: 'Передача мест', note: [].concat(regPlan ? ['Обычные ' + reg + ' из ' + regPlan] : []).concat(orders.length ? ['Аптека.ру ' + deliv + ' из ' + orders.length] : []).concat(kom.length ? ['КОМ ' + komOk + ' из ' + kom.length] : []).join(' · '), value: cases + ' из ' + plan, onClick: function () { self.setState({ screen: 'places', placesDirty: false }); } }]
         .concat(cur.add ? [{ icon: 'assignment_add', label: 'Доп. задание', note: 'Отдать 3 товара · ' + (add === 'not-done' ? 'не выполнено' : 'без отметки'), value: '1', onClick: function () { self.setState({ screen: 'add' }); } }] : [])
-        .concat([{ icon: 'description', label: 'Бумажные документы', value: '' }])
       : rowsFor(cur);
     // карта
     var mapTasks = all.filter(function (t) { return t.status === 'in-progress' || t.status === 'not-started'; });
@@ -2080,17 +2126,30 @@ class Component extends DCLogic {
       openAddProblem: function () { self.setState({ sheet: 'problem', problemFor: 'add', cause: 'x' }); },
       resetAdd: function () { var a = Object.assign({}, s.adds); delete a[cur.id]; self.setState({ adds: a }); },
       // Места
-      reg: reg, regPlan: regPlan, setReg: function (n) { self.setState({ reg: Math.max(0, Math.min(regPlan, n)) }); },
+      reg: reg, regPlan: regPlan, setReg: function (n) { self.setState({ reg: Math.max(0, Math.min(regPlan, n)), placesDirty: true }); },
       orders: orders, marked: marked, ordersCount: orders.length, hasOrders: orders.length > 0,
       kom: kom, komMarked: komMarked, komCount: kom.length, hasKom: kom.length > 0,
       cases: cases, plan: plan, deliv: deliv,
-      unmarkedText: orders.length - marked ? 'Без отметки считаем переданными' : 'Все заказы отмечены',
-      saveLabel: cases === plan ? 'Сохранить' : 'Сохранить и указать причину',
-      savePlaces: function () { if (cases === plan) { self.setState({ screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan) }); } else self.setState({ sheet: 'partial', partCause: null }); },
+      hasReg: regPlan > 0, hasBarcodes: orders.length + kom.length > 0,
+      regNote: 'Без штрихкода: простые ' + cur.reg + (cur.termo ? ' + термо ' + cur.termo : ''),
+      plMulti: plKinds > 1, plSingle: plKinds === 1,
+      plSingleTitle: plan ? 'Передано ' + cases + ' из ' + plan : 'КОМ: передано ' + komOk + ' из ' + kom.length,
+      plStatus: plan ? (cases === plan ? 'Совпадает с планом' : 'Меньше плана на ' + (plan - cases) + ' — нужна причина') : 'Вне плана мест, причина не нужна',
+      plStCls: !plan ? 'pl-muted' : cases === plan ? 'pl-ok' : 'pl-warn',
+      plTiles: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные', value: reg + ' из ' + regPlan, cls: reg < regPlan ? 'bad' : '', kom: false }] : [])
+        .concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length, cls: deliv < orders.length ? 'bad' : '', kom: false }] : [])
+        .concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length, cls: komOk < kom.length ? 'bad' : '', kom: true }] : []),
+      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — простые и термо, без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Без отметки — передано.', 'КОМ — ✓ или ✕ у каждого места. В план не входят, причина не нужна.', '«Передано» вверху — обычные и Аптека.ру. Меньше плана — после «Применить» выберите причину.'],
+      openPlacesHelp: function () { self.setState({ sheet: 'placesHelp' }); },
+      sheetPlacesHelp: s.sheet === 'placesHelp', sheetPlacesOk: s.sheet === 'placesOk',
+      applyOff: !s.placesDirty, applyLabel: !s.placesDirty ? 'Изменений нет' : plan ? 'Применить' : 'Сохранить',
+      komNoteShown: kom.length > 0 && komOk < kom.length, komNote: 'КОМ: передано ' + komOk + ' из ' + kom.length + ' — вне плана, причина не нужна',
+      savePlaces: function () { if (!plan) { self.setState({ screen: 'task', log: push(cur.id, 'Отметил КОМ: ' + komOk + ' из ' + kom.length) }); } else if (cases === plan) self.setState({ sheet: 'placesOk' }); else self.setState({ sheet: 'partial', partCause: null }); },
+      confirmPlacesOk: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan) }); },
       sheetPartial: s.sheet === 'partial',
-      partTitle: 'Передано ' + cases + ' ' + plural(cases, ['место', 'места', 'мест']) + ' из ' + plan,
-      partText: 'Не ' + (miss.length === 1 && /^1 /.test(miss[0]) ? 'передан' : 'переданы') + ' ' + miss.join(' и ') + '. Укажите причину — без неё недостачу не сохранить.',
-      partRows: [{ icon: 'package_2', label: 'Обычные места', value: reg + ' из ' + regPlan }].concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length }] : []).concat([{ label: 'Всего мест', value: cases + ' из ' + plan, total: true }]),
+      partTitle: 'Вы передали ' + cases + ' ' + plural(cases, ['место', 'места', 'мест']) + ' из ' + plan,
+      partText: 'Не ' + (miss.length === 1 && /^1 /.test(miss[0]) ? 'передан' : 'переданы') + ' ' + miss.join(' и ') + '. Выберите причину.',
+      partRows: [{ icon: 'package_2', label: 'Обычные места', value: reg + ' из ' + regPlan }].concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length }] : []).concat([{ label: 'Передано всего', value: cases + ' из ' + plan, total: true }]),
       partCauses: PART_CAUSES.map(function (c) { return Object.assign({}, c, { checked: s.partCause === c.id, pick: function () { self.setState({ partCause: c.id }); } }); }),
       partNone: !s.partCause,
       confirmPartial: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan + ' с причиной') }); },
