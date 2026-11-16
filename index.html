@@ -1657,10 +1657,11 @@ sc-if,sc-for{display:contents}
 </div></sc-if>
 <sc-if value="{{plSingle}}" hint-placeholder-val="{{no}}"><div class="pl-line"><span role="status" aria-live="polite"><b>{{plSingleTitle}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div></sc-if>
 <sc-if value="{{hasReg}}" hint-placeholder-val="{{yes}}"><div class="m-section"><span>ОБЫЧНЫЕ МЕСТА</span></div>
+<div class="pl-under">Места без штрихкода</div>
 <x-import component-from-global-scope="Mml.Stepper" id="cases" label="Передано обычных мест" value="{{reg}}" max="{{regPlan}}" plan="{{regPlan}}" on-change="{{setReg}}"></x-import></sc-if>
 <sc-if value="{{hasOrders}}" hint-placeholder-val="{{yes}}">
 <div class="m-section"><span>АПТЕКА.РУ</span></div>
-<div class="pl-under">Без отметки — передано</div>
+<div class="pl-under">Без отметки считаются переданными</div>
 <sc-for list="{{orders}}" as="o" hint-placeholder-count="8">
 <x-import component-from-global-scope="Mml.OrderRow" number="{{o.number}}" place="{{o.place}}" barcode="{{o.barcode}}" price="{{o.price}}" mark="{{o.mark}}" on-mark="{{o.setMark}}"></x-import>
 </sc-for>
