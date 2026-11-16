@@ -1657,8 +1657,7 @@ sc-if,sc-for{display:contents}
 </div></sc-if>
 <sc-if value="{{plSingle}}" hint-placeholder-val="{{no}}"><div class="pl-line"><span role="status" aria-live="polite"><b>{{plSingleTitle}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div></sc-if>
 <sc-if value="{{hasReg}}" hint-placeholder-val="{{yes}}"><div class="m-section"><span>ОБЫЧНЫЕ МЕСТА</span></div>
-<x-import component-from-global-scope="Mml.Stepper" id="cases" label="Передано обычных мест" value="{{reg}}" max="{{regPlan}}" plan="{{regPlan}}" on-change="{{setReg}}"></x-import>
-<div class="pl-under">{{regNote}}</div></sc-if>
+<x-import component-from-global-scope="Mml.Stepper" id="cases" label="Передано обычных мест" value="{{reg}}" max="{{regPlan}}" plan="{{regPlan}}" on-change="{{setReg}}"></x-import></sc-if>
 <sc-if value="{{hasOrders}}" hint-placeholder-val="{{yes}}">
 <div class="m-section"><span>АПТЕКА.РУ</span></div>
 <div class="pl-under">Без отметки — передано</div>
@@ -2223,7 +2222,6 @@ class Component extends DCLogic {
       kom: kom, komMarked: komMarked, komCount: kom.length, hasKom: kom.length > 0,
       cases: cases, plan: plan, deliv: deliv,
       hasReg: regPlan > 0, hasBarcodes: orders.length + kom.length > 0,
-      regNote: 'Без штрихкода: простые и термо',
       plMulti: plKinds > 1, plSingle: plKinds === 1,
       plSingleTitle: 'Передано ' + cases + ' из ' + plan,
       plStatus: cases === plan ? 'Совпадает с планом' : 'Меньше плана на ' + (plan - cases) + ' — нужна причина',
@@ -2231,7 +2229,7 @@ class Component extends DCLogic {
       plTiles: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные', value: reg + ' из ' + regPlan, cls: reg < regPlan ? 'bad' : '' }] : [])
         .concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length, cls: deliv < orders.length ? 'bad' : '' }] : [])
         .concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length, cls: komOk < kom.length ? 'bad' : '' }] : []),
-      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — простые и термо, без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', 'КОМ — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', '«Передано» вверху — все места задания: обычные, Аптека.ру и КОМ. Меньше плана — после «Применить» выберите причину.'],
+      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — места без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', 'КОМ — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', '«Передано» вверху — все места задания: обычные, Аптека.ру и КОМ. Меньше плана — после «Применить» выберите причину.'],
       openPlacesHelp: function () { self.setState({ sheet: 'placesHelp' }); },
       sheetPlacesHelp: s.sheet === 'placesHelp', sheetPlacesOk: s.sheet === 'placesOk',
       applyOff: !s.placesDirty, applyLabel: !s.placesDirty ? 'Изменений нет' : 'Применить',
