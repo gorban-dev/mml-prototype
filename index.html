@@ -1653,7 +1653,7 @@ sc-if,sc-for{display:contents}
 <div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
 <sc-if value="{{plMulti}}" hint-placeholder-val="{{yes}}"><div class="pl-dash">
 <div class="pl-head"><span role="status" aria-live="polite"><b>Передано {{cases}} из {{plan}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div>
-<div class="pl-grid"><sc-for list="{{plTiles}}" as="t" hint-placeholder-count="3"><div class="pl-tile"><span class="m-ic m-ic-sm" aria-hidden="true">{{t.icon}}</span><span class="l">{{t.label}}</span><b class="{{t.cls}}">{{t.value}}</b><sc-if value="{{t.kom}}" hint-placeholder-val="{{no}}"><small>вне плана</small></sc-if></div></sc-for></div>
+<div class="pl-grid"><sc-for list="{{plTiles}}" as="t" hint-placeholder-count="3"><div class="pl-tile"><span class="m-ic m-ic-sm" aria-hidden="true">{{t.icon}}</span><span class="l">{{t.label}}</span><b class="{{t.cls}}">{{t.value}}</b></div></sc-for></div>
 </div></sc-if>
 <sc-if value="{{plSingle}}" hint-placeholder-val="{{no}}"><div class="pl-line"><span role="status" aria-live="polite"><b>{{plSingleTitle}}</b><span class="pl-st {{plStCls}}">{{plStatus}}</span></span><span class="pl-info"><x-import component-from-global-scope="Mml.IconButton" icon="info" label="Как считаются места" on-click="{{openPlacesHelp}}"></x-import></span></div></sc-if>
 <sc-if value="{{hasReg}}" hint-placeholder-val="{{yes}}"><div class="m-section"><span>ОБЫЧНЫЕ МЕСТА</span></div>
@@ -1730,7 +1730,6 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="{{partTitle}}" text="Всё совпадает с планом. Проверьте и сохраните.">
 <div class="pc-col">
 <sc-if value="{{plMulti}}" hint-placeholder-val="{{yes}}"><x-import component-from-global-scope="Mml.KeyValueTable" rows="{{partRows}}"></x-import></sc-if>
-<sc-if value="{{komNoteShown}}" hint-placeholder-val="{{no}}"><p class="pc-note">{{komNote}}</p></sc-if>
 </div>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{confirmPlacesOk}}">Верно, сохранить</x-import>
 <x-import component-from-global-scope="Mml.Button" variant="text" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Исправить</x-import>
@@ -1981,7 +1980,7 @@ class Component extends DCLogic {
       var listFlags = x.status === 'done-auto' && x.autoLeft ? [{ icon: 'timer', label: 'Отменить можно ещё ' + x.autoLeft + ' мин' }] : t.flags;
       // Действие по заданию ещё в очереди — серый флаг «Ждёт отправки» (TaskCard-States, п. 8)
       if (s.log.some(function (e) { return !e.rejected && e.num === t.num; })) listFlags = (listFlags || []).concat([{ icon: 'cloud_upload', label: 'Ждёт отправки' }]);
-      return Object.assign({}, t, x, { counts: counts, listFlags: listFlags, total: t.reg + t.termo + t.apt, cause: c ? c.title : '', causeShort: c ? c.short : '',
+      return Object.assign({}, t, x, { counts: counts, listFlags: listFlags, total: t.reg + t.termo + t.apt + t.kom, cause: c ? c.title : '', causeShort: c ? c.short : '',
         open: function () { self.setState({ curId: t.id, screen: 'task', sheet: null, from: s.screen === 'task' ? s.from : s.screen, reg: null, marks: s.curId === t.id ? s.marks : {} }); } });
     });
     var by = function (st) { return all.filter(function (t) { return t.status === st; }); };
@@ -2016,11 +2015,13 @@ class Component extends DCLogic {
     var orders = ORDERS.slice(0, cur.apt).map(function (o) { return Object.assign({ place: 1 }, o, { mark: s.marks[o.number] || null, setMark: markFn(o.number) }); });
     var kom = []; for (var k = 1; k <= cur.kom; k++) kom.push({ number: 'Док. 00-00458' + (70 + cur.num), place: k, barcode: '29000458' + (70 + cur.num) + '0' + k + '9', mark: s.marks['kom' + k] || null, setMark: markFn('kom' + k) });
     var marked = orders.filter(function (o) { return o.mark; }).length, komMarked = kom.filter(function (o) { return o.mark; }).length;
-    var notDeliv = orders.filter(function (o) { return o.mark === 'not-delivered'; }).length, deliv = orders.length - notDeliv, cases = reg + deliv, plan = regPlan + orders.length;
-    var komOk = kom.filter(function (o) { return o.mark !== 'not-delivered'; }).length, plKinds = (regPlan ? 1 : 0) + (orders.length ? 1 : 0) + (kom.length ? 1 : 0);
+    var notDeliv = orders.filter(function (o) { return o.mark === 'not-delivered'; }).length, deliv = orders.length - notDeliv;
+    // КОМ входят в план (MML-65): casesFact = обычные + Аптека.ру без ✕ + КОМ без ✕
+    var komOk = kom.filter(function (o) { return o.mark !== 'not-delivered'; }).length, cases = reg + deliv + komOk, plan = regPlan + orders.length + kom.length, plKinds = (regPlan ? 1 : 0) + (orders.length ? 1 : 0) + (kom.length ? 1 : 0);
     var miss = [];
     if (regPlan - reg > 0) miss.push((regPlan - reg) + ' ' + plural(regPlan - reg, ['обычное место', 'обычных места', 'обычных мест']));
     if (notDeliv) miss.push(notDeliv + ' ' + plural(notDeliv, ['место', 'места', 'мест']) + ' Аптека.ру');
+    if (kom.length - komOk) miss.push((kom.length - komOk) + ' ' + plural(kom.length - komOk, ['место', 'места', 'мест']) + ' КОМ');
     // очередь
     var rejected = s.log.filter(function (e) { return e.rejected; }), pendingList = s.log.filter(function (e) { return !e.rejected; });
     var pending = pendingList.length;
@@ -2222,25 +2223,24 @@ class Component extends DCLogic {
       kom: kom, komMarked: komMarked, komCount: kom.length, hasKom: kom.length > 0,
       cases: cases, plan: plan, deliv: deliv,
       hasReg: regPlan > 0, hasBarcodes: orders.length + kom.length > 0,
-      regNote: 'Без штрихкода: простые ' + cur.reg + (cur.termo ? ' + термо ' + cur.termo : ''),
+      regNote: 'Без штрихкода: простые и термо',
       plMulti: plKinds > 1, plSingle: plKinds === 1,
-      plSingleTitle: plan ? 'Передано ' + cases + ' из ' + plan : 'КОМ: передано ' + komOk + ' из ' + kom.length,
-      plStatus: plan ? (cases === plan ? 'Совпадает с планом' : 'Меньше плана на ' + (plan - cases) + ' — нужна причина') : 'Вне плана мест, причина не нужна',
-      plStCls: !plan ? 'pl-muted' : cases === plan ? 'pl-ok' : 'pl-warn',
-      plTiles: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные', value: reg + ' из ' + regPlan, cls: reg < regPlan ? 'bad' : '', kom: false }] : [])
-        .concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length, cls: deliv < orders.length ? 'bad' : '', kom: false }] : [])
-        .concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length, cls: komOk < kom.length ? 'bad' : '', kom: true }] : []),
-      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — простые и термо, без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', 'КОМ — ✓ или ✕ у каждого места. В план не входят, причина не нужна.', '«Передано» вверху — обычные и Аптека.ру. Меньше плана — после «Применить» выберите причину.'],
+      plSingleTitle: 'Передано ' + cases + ' из ' + plan,
+      plStatus: cases === plan ? 'Совпадает с планом' : 'Меньше плана на ' + (plan - cases) + ' — нужна причина',
+      plStCls: cases === plan ? 'pl-ok' : 'pl-warn',
+      plTiles: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные', value: reg + ' из ' + regPlan, cls: reg < regPlan ? 'bad' : '' }] : [])
+        .concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length, cls: deliv < orders.length ? 'bad' : '' }] : [])
+        .concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length, cls: komOk < kom.length ? 'bad' : '' }] : []),
+      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — простые и термо, без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', 'КОМ — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', '«Передано» вверху — все места задания: обычные, Аптека.ру и КОМ. Меньше плана — после «Применить» выберите причину.'],
       openPlacesHelp: function () { self.setState({ sheet: 'placesHelp' }); },
       sheetPlacesHelp: s.sheet === 'placesHelp', sheetPlacesOk: s.sheet === 'placesOk',
-      applyOff: !s.placesDirty, applyLabel: !s.placesDirty ? 'Изменений нет' : plan ? 'Применить' : 'Сохранить',
-      komNoteShown: kom.length > 0 && komOk < kom.length, komNote: 'КОМ: передано ' + komOk + ' из ' + kom.length + ' — вне плана, причина не нужна',
-      savePlaces: function () { if (!plan) { self.setState({ screen: 'task', log: push(cur.id, 'Отметил КОМ: ' + komOk + ' из ' + kom.length) }); } else if (cases === plan) self.setState({ sheet: 'placesOk' }); else self.setState({ sheet: 'partial', partCause: null }); },
+      applyOff: !s.placesDirty, applyLabel: !s.placesDirty ? 'Изменений нет' : 'Применить',
+      savePlaces: function () { if (cases === plan) self.setState({ sheet: 'placesOk' }); else self.setState({ sheet: 'partial', partCause: null }); },
       confirmPlacesOk: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan) }); },
       sheetPartial: s.sheet === 'partial',
       partTitle: 'Вы передали ' + cases + ' ' + plural(cases, ['место', 'места', 'мест']) + ' из ' + plan,
-      partText: 'Не ' + (miss.length === 1 && /^1 /.test(miss[0]) ? 'передан' : 'переданы') + ' ' + miss.join(' и ') + '. Выберите причину.',
-      partRows: [{ icon: 'package_2', label: 'Обычные места', value: reg + ' из ' + regPlan }].concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length }] : []).concat([{ label: 'Передано всего', value: cases + ' из ' + plan, total: true }]),
+      partText: 'Не ' + (miss.length === 1 && /^1 /.test(miss[0]) ? 'передан' : 'переданы') + ' ' + (miss.length > 1 ? miss.slice(0, -1).join(', ') + ' и ' + miss[miss.length - 1] : miss.join('')) + '. Выберите причину.',
+      partRows: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные места', value: reg + ' из ' + regPlan }] : []).concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length }] : []).concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length }] : []).concat([{ label: 'Передано всего', value: cases + ' из ' + plan, total: true }]),
       partCauses: PART_CAUSES.map(function (c) { return Object.assign({}, c, { checked: s.partCause === c.id, pick: function () { self.setState({ partCause: c.id }); } }); }),
       partNone: !s.partCause,
       confirmPartial: function () { self.setState({ sheet: null, screen: 'task', log: push(cur.id, 'Передал места: ' + cases + ' из ' + plan + ' с причиной') }); },
