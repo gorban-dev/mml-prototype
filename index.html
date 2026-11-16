@@ -1801,8 +1801,8 @@ sc-if,sc-for{display:contents}
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Комментарий для диспетчера" text="Задание №{{cur.num}} · увидит диспетчер">
 <x-import component-from-global-scope="Mml.TextField" id="comment" label="Комментарий" value="{{commentDraft}}" lines="{{four}}"></x-import>
-<sc-if value="{{hasComment}}" hint-placeholder-val="{{no}}"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant); width: 100%;" onClick="{{deleteComment}}"><span>Удалить комментарий</span></button></sc-if>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{saveComment}}">Сохранить</x-import>
+<sc-if value="{{hasComment}}" hint-placeholder-val="{{no}}"><button type="button" class="m-btn m-btn-text" style="color: var(--on-surface-variant); width: 100%;" onClick="{{deleteComment}}"><span>Удалить комментарий</span></button></sc-if>
 </x-import>
 </div>
 </sc-if>
