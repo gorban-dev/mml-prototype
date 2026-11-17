@@ -507,6 +507,8 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-order { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4); background: var(--surface-container); border-bottom: 1px solid var(--outline-variant); }
 .m-order-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .m-order-id { font-family: var(--font-mono); font-size: 15px; line-height: 20px; font-weight: 500; }
+.m-order-idrow { display: flex; align-items: center; gap: 6px; }
+.m-order-scan { font-size: 18px; color: var(--primary); }
 .m-order-sub { font-size: 14px; line-height: 20px; color: var(--on-surface-variant); font-variant-numeric: tabular-nums; }
 .m-order-sub .code { font-family: var(--font-mono); }
 .m-order-marks { display: flex; gap: 4px; }
@@ -1209,13 +1211,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- OrderRow ---------- */
   function OrderRow(p) {
+    // Без отметки место передано, поэтому по умолчанию ✓ (MML-69)
+    var mark = p.mark === 'not-delivered' ? 'not-delivered' : 'delivered';
     return h('div', { className: 'm-order' },
       h('div', { className: 'm-order-main' },
-        h('span', { className: 'm-order-id' }, p.number),
+        // Значок скана у номера — только для водителя, на сервер не уходит (MML-70)
+        p.scanned
+          ? h('span', { className: 'm-order-idrow' }, h('span', { className: 'm-order-id' }, p.number),
+              h('span', { className: 'm-ic m-order-scan', role: 'img', 'aria-label': 'Отсканировано' }, 'barcode_scanner'))
+          : h('span', { className: 'm-order-id' }, p.number),
         h('span', { className: 'm-order-sub' }, 'Место ' + p.place + ' · ШК ', h('span', { className: 'code' }, p.barcode), p.price != null ? ' · ' + fmtMoney(p.price) : null)),
       h('div', { className: 'm-order-marks' },
-        h('button', { type: 'button', className: 'm-mark m-mark-yes', 'aria-pressed': p.mark === 'delivered' ? 'true' : 'false', 'aria-label': 'Передан', onClick: function () { p.onMark && p.onMark('delivered'); } }, h(Icon, { name: 'check' })),
-        h('button', { type: 'button', className: 'm-mark m-mark-no', 'aria-pressed': p.mark === 'not-delivered' ? 'true' : 'false', 'aria-label': 'Не передан', onClick: function () { p.onMark && p.onMark('not-delivered'); } }, h(Icon, { name: 'close' }))));
+        h('button', { type: 'button', className: 'm-mark m-mark-yes', 'aria-pressed': mark === 'delivered' ? 'true' : 'false', 'aria-label': 'Передан', onClick: function () { p.onMark && p.onMark('delivered'); } }, h(Icon, { name: 'check' })),
+        h('button', { type: 'button', className: 'm-mark m-mark-no', 'aria-pressed': mark === 'not-delivered' ? 'true' : 'false', 'aria-label': 'Не передан', onClick: function () { p.onMark && p.onMark('not-delivered'); } }, h(Icon, { name: 'close' }))));
   }
 
   /* ---------- Stepper ---------- */
@@ -1415,6 +1423,8 @@ sc-if,sc-for{display:contents}
 .pl-tile b.bad{color:var(--error)}
 .pl-tile small{font-size:12px;line-height:16px;color:var(--on-surface-variant)}
 .pl-help{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:20px}
+.pl-help-scan{display:flex;gap:8px;margin-top:8px;font-size:15px;line-height:20px}
+.pl-help-scan .m-ic{font-size:18px;color:var(--primary);margin-top:1px}
 .pc-note{font-size:14px;line-height:20px;color:var(--on-surface-variant);margin:0}
 </style>
 </helmet>
@@ -1609,7 +1619,9 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.Button" size="lg" on-click="{{finish}}">Передал груз</x-import>
 </div>
 </sc-if>
-<sc-if value="{{isSkipped}}" hint-placeholder-val="{{no}}"><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{start}}">Возобновить задание</x-import></sc-if>
+<sc-if value="{{skippedNext}}" hint-placeholder-val="{{no}}"><x-import component-from-global-scope="Mml.Button" variant="outlined" size="lg" block="{{yes}}" on-click="{{start}}">Возобновить задание</x-import>
+<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{openNext}}">{{nextLabel}}</x-import></sc-if>
+<sc-if value="{{skippedOnly}}" hint-placeholder-val="{{no}}"><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{start}}">Возобновить задание</x-import></sc-if>
 <sc-if value="{{isClosed}}" hint-placeholder-val="{{no}}"><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{openNext}}">{{nextLabel}}</x-import></sc-if>
 </div>
 </div>
@@ -1658,13 +1670,14 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.Stepper" id="cases" label="Передано обычных мест" value="{{reg}}" max="{{regPlan}}" plan="{{regPlan}}" on-change="{{setReg}}"></x-import></sc-if>
 <sc-if value="{{hasOrders}}" hint-placeholder-val="{{yes}}">
 <div class="m-section"><span>АПТЕКА.РУ</span></div>
-<div class="pl-under">Без отметки считаются переданными</div>
+<div class="pl-under">Все места отмечены переданными. Не передали — нажмите ✕</div>
 <sc-for list="{{orders}}" as="o" hint-placeholder-count="8">
 <x-import component-from-global-scope="Mml.OrderRow" number="{{o.number}}" place="{{o.place}}" barcode="{{o.barcode}}" price="{{o.price}}" mark="{{o.mark}}" on-mark="{{o.setMark}}"></x-import>
 </sc-for>
 </sc-if>
 <sc-if value="{{hasKom}}" hint-placeholder-val="{{yes}}">
 <div class="m-section"><span>КОМ ПО ПУНКТУ ДОСТАВКИ</span></div>
+<div class="pl-under">Все места отмечены переданными. Не передали — нажмите ✕</div>
 <sc-for list="{{kom}}" as="o" hint-placeholder-count="4">
 <x-import component-from-global-scope="Mml.OrderRow" number="{{o.number}}" place="{{o.place}}" barcode="{{o.barcode}}" mark="{{o.mark}}" on-mark="{{o.setMark}}"></x-import>
 </sc-for>
@@ -1738,6 +1751,7 @@ sc-if,sc-for{display:contents}
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Как считаются места">
 <ul class="pl-help"><sc-for list="{{plHelp}}" as="h" hint-placeholder-count="5"><li>{{h}}</li></sc-for></ul>
+<div class="pl-help-scan"><span class="m-ic" aria-hidden="true">barcode_scanner</span><span>Такой значок у номера — место отсканировано. Это только для вас, на сервер не уходит.</span></div>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Понятно</x-import>
 </x-import>
 </div>
@@ -1820,16 +1834,6 @@ sc-if,sc-for{display:contents}
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Термоконтейнеры и регистраторы" text="Сверьте штрихкоды при погрузке.">
 <div class="tk-list"><div class="tk-head">Заказ · 3</div><ul><li class="tk-row"><span class="m-ic" aria-hidden="true">ac_unit</span><span class="tk-code"><b>4600000000011</b><small>термоконтейнер</small></span></li><li class="tk-row"><span class="m-ic" aria-hidden="true">ac_unit</span><span class="tk-code"><b>4600000000028</b><small>термоконтейнер</small></span></li><li class="tk-row"><span class="m-ic" aria-hidden="true">device_thermostat</span><span class="tk-code"><b>4600000000035</b><small>терморегистратор</small></span></li></ul><div class="tk-head tk-ret">Возврат · 2</div><ul><li class="tk-row"><span class="m-ic" aria-hidden="true">ac_unit</span><span class="tk-code"><b>4600000000042</b><small>термоконтейнер</small></span></li><li class="tk-row"><span class="m-ic" aria-hidden="true">device_thermostat</span><span class="tk-code"><b>4600000000059</b><small>терморегистратор</small></span></li></ul></div>
-</x-import>
-</div>
-</sc-if>
-<sc-if value="{{sheetFinished}}" hint-placeholder-val="{{no}}">
-<div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
-<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Маршрут завершён" text="Все {{total}} заданий закрыты. Спасибо за работу!">
-<x-import component-from-global-scope="Mml.KeyValueTable" rows="{{itogShort}}"></x-import>
-<sc-if value="{{hasPending}}" hint-placeholder-val="{{yes}}"><x-import component-from-global-scope="Mml.Banner" tone="warning">{{pendingBanner}}</x-import></sc-if>
-<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{goMl}}">Понятно</x-import>
-<x-import component-from-global-scope="Mml.Button" variant="text" block="{{yes}}" on-click="{{goOutbox}}">Изменения на отправку</x-import>
 </x-import>
 </div>
 </sc-if>
@@ -2008,9 +2012,9 @@ class Component extends DCLogic {
     };
     // места
     var regPlan = cur.reg + cur.termo, reg = s.reg == null ? regPlan : s.reg;
-    var markFn = function (key) { return function (m) { var mk = Object.assign({}, s.marks); mk[key] = mk[key] === m ? null : m; self.setState({ marks: mk, placesDirty: true }); }; };
-    var orders = ORDERS.slice(0, cur.apt).map(function (o) { return Object.assign({ place: 1 }, o, { mark: s.marks[o.number] || null, setMark: markFn(o.number) }); });
-    var kom = []; for (var k = 1; k <= cur.kom; k++) kom.push({ number: 'Док. 00-00458' + (70 + cur.num), place: k, barcode: '29000458' + (70 + cur.num) + '0' + k + '9', mark: s.marks['kom' + k] || null, setMark: markFn('kom' + k) });
+    var markFn = function (key) { return function (m) { var mk = Object.assign({}, s.marks); if ((mk[key] || 'delivered') === m) return; mk[key] = m; self.setState({ marks: mk, placesDirty: true }); }; };
+    var orders = ORDERS.slice(0, cur.apt).map(function (o) { return Object.assign({ place: 1 }, o, { mark: s.marks[o.number] || 'delivered', setMark: markFn(o.number) }); });
+    var kom = []; for (var k = 1; k <= cur.kom; k++) kom.push({ number: 'Док. 00-00458' + (70 + cur.num), place: k, barcode: '29000458' + (70 + cur.num) + '0' + k + '9', mark: s.marks['kom' + k] || 'delivered', setMark: markFn('kom' + k) });
     var marked = orders.filter(function (o) { return o.mark; }).length, komMarked = kom.filter(function (o) { return o.mark; }).length;
     var notDeliv = orders.filter(function (o) { return o.mark === 'not-delivered'; }).length, deliv = orders.length - notDeliv;
     // КОМ входят в план (MML-65): casesFact = обычные + Аптека.ру без ✕ + КОМ без ✕
@@ -2120,7 +2124,7 @@ class Component extends DCLogic {
       logoutText: pending + ' ' + plural(pending, ['действие ещё не отправлено', 'действия ещё не отправлены', 'действий ещё не отправлено']) + '. Отправьте их перед выходом — после выхода они пропадут.',
       // Задание
       cur: Object.assign({}, cur, { badgeDetail: cur.status === 'in-progress' ? 'с ' + cur.at : cur.status === 'not-started' ? '' : cur.at, autoLeft: autoLeft }),
-      isNotStarted: cur.status === 'not-started', canStart: cur.status === 'not-started' && !(inWork && inWork.id !== cur.id), startBusy: cur.status === 'not-started' && !!(inWork && inWork.id !== cur.id), isInProgress: cur.status === 'in-progress', isSkipped: cur.status === 'skipped',
+      isNotStarted: cur.status === 'not-started', canStart: cur.status === 'not-started' && !(inWork && inWork.id !== cur.id), startBusy: cur.status === 'not-started' && !!(inWork && inWork.id !== cur.id), isInProgress: cur.status === 'in-progress', isSkipped: cur.status === 'skipped', skippedNext: cur.status === 'skipped' && !!next, skippedOnly: cur.status === 'skipped' && !next,
       isDoneAuto: cur.status === 'done-auto', isClosed: cur.status === 'done' || cur.status === 'done-auto', showHours: !(cur.status === 'done' || cur.status === 'done-auto'),
       autoCancellable: autoLeft > 0, autoPct: Math.round(autoLeft / 30 * 100) + '%',
       autoText: autoLeft > 0 ? 'Вы были в 50 м от аптеки 3 минуты. Если груз не передан, отмените — понадобится причина.' : 'Вы были в 50 м от аптеки 3 минуты. 30 минут на отмену прошли.',
@@ -2176,8 +2180,6 @@ class Component extends DCLogic {
         }
         var stNew = setSt(cur.id, { status: 'skipped', at: '14:5' + (s.log.length % 10), cause: curCause, autoLeft: 0 });
         self.setState({ st: stNew, sheet: null, log: push(cur.id, s.problemFor === 'auto' ? 'Отменил автоподтверждение' : 'Сообщил о проблеме') });
-        var left = TASKS.filter(function (t) { var x = stNew[t.id]; return !x || x.status === 'not-started' || x.status === 'in-progress'; }).length;
-        if (!left) self.setState({ sheet: 'finished' });
       },
       hasComment: !!s.comments[cur.id], noComment: !s.comments[cur.id], commentText: s.comments[cur.id] || '', four: 4,
       commentDraft: s.comments[cur.id] || 'Аптека закрыта на обед до 14:00, оставил у охраны',
@@ -2228,7 +2230,7 @@ class Component extends DCLogic {
       plTiles: [].concat(regPlan ? [{ icon: 'package_2', label: 'Обычные', value: reg + ' из ' + regPlan, cls: reg < regPlan ? 'bad' : '' }] : [])
         .concat(orders.length ? [{ icon: 'shopping_bag', label: 'Аптека.ру', value: deliv + ' из ' + orders.length, cls: deliv < orders.length ? 'bad' : '' }] : [])
         .concat(kom.length ? [{ icon: 'inventory_2', label: 'КОМ', value: komOk + ' из ' + kom.length, cls: komOk < kom.length ? 'bad' : '' }] : []),
-      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — места без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', 'КОМ — ✓ или ✕ у каждого места. Места без отметки считаются переданными.', '«Передано» вверху — все места задания: обычные, Аптека.ру и КОМ. Меньше плана — после «Применить» выберите причину.'],
+      plHelp: ['Места задания — три вида. Каждый отмечается отдельно и не меняет другие.', 'Обычные места — места без штрихкода. Укажите, сколько передали.', 'Аптека.ру — ✓ или ✕ у каждого места. Сразу у всех стоит ✓, ✕ ставите сами.', 'КОМ — ✓ или ✕ у каждого места. Сразу у всех стоит ✓, ✕ ставите сами.', '«Передано» вверху — все места задания: обычные, Аптека.ру и КОМ. Меньше плана — после «Применить» выберите причину.'],
       openPlacesHelp: function () { self.setState({ sheet: 'placesHelp' }); },
       sheetPlacesHelp: s.sheet === 'placesHelp', sheetPlacesOk: s.sheet === 'placesOk',
       applyOff: !s.placesDirty, applyLabel: !s.placesDirty ? 'Изменений нет' : 'Применить',
@@ -2250,7 +2252,7 @@ class Component extends DCLogic {
       sendNow: function () { if (s.offline) { self.say('Нет сети. Отправим, когда связь появится'); return; } self.setState({ log: rejected }); },
       // Шторки
       sheetProblem: s.sheet === 'problem', sheetCancel: s.sheet === 'cancel', sheetCancelAuto: s.sheet === 'cancelAuto', sheetFinish: s.sheet === 'finish', sheetAddCancelAll: s.sheet === 'addCancelAll', sheetBusy: s.sheet === 'busy',
-      sheetComment: s.sheet === 'comment', sheetUpdated: s.sheet === 'updated', sheetFinished: s.sheet === 'finished', sheetTermo: s.sheet === 'termo', sheetTheme: s.sheet === 'theme', sheetLogout: s.sheet === 'logout',
+      sheetComment: s.sheet === 'comment', sheetUpdated: s.sheet === 'updated', sheetTermo: s.sheet === 'termo', sheetTheme: s.sheet === 'theme', sheetLogout: s.sheet === 'logout',
       toast: s.toast, toastBottom: s.screen === 'route' ? '65px' : s.screen === 'map' ? '0px' : '80px'
     };
   }
@@ -2258,8 +2260,8 @@ class Component extends DCLogic {
     var s = this.state, self = this;
     var st = Object.assign({}, s.st); st[cur.id] = Object.assign({}, st[cur.id] || {}, { status: 'done', at: '14:5' + (s.log.length % 10) });
     var log = s.log.concat([{ num: cur.id, action: 'Передал груз', time: '14:5' + (s.log.length % 10) }]);
-    var left = TASKS.filter(function (t) { var x = st[t.id]; return !x || x.status === 'not-started' || x.status === 'in-progress'; }).length;
-    this.setState({ st: st, log: log, sheet: left ? null : 'finished', screen: 'route', tab: 'tasks', marks: {}, reg: null });
+    // Остаёмся на выполненном задании: внизу «Следующее: задание №N» (MML-74)
+    this.setState({ st: st, log: log, sheet: null, marks: {}, reg: null });
   }
 }
 </script><script>// Оболочка прототипа вне холста: рамка телефона, сценарии и тема вместо твиков холста.
