@@ -1443,8 +1443,8 @@ body{margin:0}
 .m-dialog-wrap{background:transparent}
 sc-if,sc-for{display:contents}
 .pstrip-clip{position:absolute;top:0;left:0;right:0;height:120px;overflow:hidden;pointer-events:none}
-.pstrip{transform:translateY(-110%);transition:transform 200ms cubic-bezier(.4,0,1,1)}
-.pstrip-on{transform:none;pointer-events:auto;transition:transform 250ms cubic-bezier(0,0,.2,1)}
+.pstrip{transform:translateY(-110%);visibility:hidden;transition:transform 200ms cubic-bezier(.4,0,1,1),visibility 0s 200ms}
+.pstrip-on{transform:none;visibility:visible;pointer-events:auto;transition:transform 250ms cubic-bezier(0,0,.2,1),visibility 0s}
 .tk-list{margin:0 -16px}
 .tk-list ul{list-style:none;margin:0;padding:0}
 .tk-head{padding:10px 16px 6px;font-size:14px;line-height:20px;font-weight:600;color:var(--primary)}
