@@ -466,6 +466,10 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-now-kicker { font-size: 13px; line-height: 16px; font-weight: 700; color: var(--on-primary-container); letter-spacing: .02em; }
 .m-now h3 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; text-wrap: balance; }
 .m-now p { margin: 0; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+.m-now-strip { display: flex; align-items: center; gap: var(--space-3); width: 100%; box-sizing: border-box; min-height: 64px; padding: 8px 4px 8px 16px; border: 0; background: var(--primary-container); color: var(--on-surface); font: inherit; text-align: left; cursor: pointer; box-shadow: 0 6px 8px -6px rgba(19, 34, 32, 0.25); }
+.m-now-strip-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.m-now-strip b { font-size: 17px; line-height: 24px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-now-strip .m-ic { width: 48px; text-align: center; color: var(--on-primary-container); }
 
 /* ---------- number circle ---------- */
 .m-numc { width: 32px; height: 32px; border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
@@ -571,6 +575,13 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-sheet-head .m-iconbtn { flex: none; margin-top: -6px; }
 .m-sheet h2 { flex: 1 1 auto; margin: 6px 0 0; font-size: 20px; line-height: 26px; font-weight: 600; text-wrap: balance; }
 .m-sheet p { margin: 0; font-size: 16px; line-height: 24px; color: var(--on-surface-variant); }
+/* Высота — от окна доски: холст оборачивает компонент своим элементом, и проценты через него не доходят. 72 — отступ .m-sheet-wrap */
+.m-sheet-fixed { max-height: calc(100vh - 72px); min-height: 0; }
+.m-sheet-body { position: relative; display: flex; flex-direction: column; gap: var(--space-3); flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+.m-sheet-body > * { flex-shrink: 0; }
+/* Низ середины растворяется в подложке кнопок, пока ниже есть контент: как .m-actionbar::before, 24 px */
+.m-sheet-more::after { content: ''; position: sticky; bottom: 0; flex: none; display: block; height: var(--space-6); margin-top: calc(-1 * var(--space-6) - var(--space-3)); background: linear-gradient(to bottom, color-mix(in srgb, var(--surface-container) 0%, transparent), var(--surface-container)); pointer-events: none; }
+.m-sheet-actions { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-1); }
 .m-option { display: flex; align-items: flex-start; gap: var(--space-3); padding: 12px var(--space-3); border: 1.5px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container); cursor: pointer; font: inherit; color: inherit; text-align: left; width: 100%; }
 .m-option[aria-checked="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
 .m-option b { display: block; font-size: 16px; line-height: 24px; font-weight: 600; }
@@ -684,9 +695,7 @@ button.m-marker { font-family: inherit; line-height: 1; cursor: pointer; }
 
 /* Меню ⋮ (экран «О приложении»: «Удалить профиль», D2) */
 .m-menu { position: absolute; top: 52px; right: 8px; z-index: 5; min-width: 220px; padding: 8px 0; background: var(--surface-container); border-radius: var(--radius-sm); box-shadow: var(--shadow-float); border: 1px solid var(--outline-variant); }
-.m-menu-item { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; font-size: 16px; line-height: 24px; }
-/* Карточка «Сейчас», закреплённая под шапкой при прокрутке списка */
-.m-now-sticky { flex-shrink: 0; padding: 16px 16px 12px; background: var(--surface); box-shadow: 0 6px 8px -6px rgba(19, 34, 32, 0.25); position: relative; z-index: 1; }</style><style>html, body { margin: 0; height: 100%; }
+.m-menu-item { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; font-size: 16px; line-height: 24px; }</style><style>html, body { margin: 0; height: 100%; }
 html { --sh-bg: #ecebef; --sh-fg: #1c1b1f; --sh-mute: #5f5d66; --sh-line: #cfcdd6; --sh-card: #fff; --sh-acc: #1f5fbf; }
 html[data-shell="dark"] { --sh-bg: #141317; --sh-fg: #e6e1e9; --sh-mute: #a8a4b0; --sh-line: #3a3840; --sh-card: #1f1e23; --sh-acc: #8fb4ff; }
 body { background: var(--sh-bg); color: var(--sh-fg); font-family: var(--font-sans); }
@@ -1176,6 +1185,14 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ---------- NowCard ---------- */
   function NowCard(p) {
     var kicker = { 'in-progress': 'СЕЙЧАС В РАБОТЕ', 'next': 'СЛЕДУЮЩЕЕ', 'completed': 'МАРШРУТ ЗАВЕРШЁН' }[p.mode];
+    // Полоса при прокрутке (MML-86, D55): вся — кнопка «открыть задание», адрес в одну строку
+    if (p.compact) {
+      var short = p.mode === 'in-progress' ? 'В РАБОТЕ' + (p.since ? ' · С ' + p.since : '') : 'СЛЕДУЮЩЕЕ';
+      return h('button', { type: 'button', className: 'm-now-strip', onClick: p.onClick, 'aria-label': short + '. Задание №' + p.num + ': ' + p.address },
+        h(NumCircle, { num: p.num, state: p.mode === 'in-progress' ? 'in-progress' : 'not-started' }),
+        h('span', { className: 'm-now-strip-text' }, h('span', { className: 'm-now-kicker' }, short), h('b', null, p.address)),
+        h(Icon, { name: 'chevron_right' }));
+    }
     if (p.mode === 'completed') {
       return h('section', { className: 'm-now' },
         h('div', { className: 'm-now-head' }, h(Icon, { name: 'flag', fill: true }), h('span', { className: 'm-now-kicker' }, kicker)),
@@ -1290,14 +1307,36 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ---------- BottomSheet ---------- */
+  /* actions — закреплённые кнопки: середина (children) прокручивается под ними, и пока ниже есть контент, её низ
+     растворяется в подложке кнопок (.m-sheet-more). В разметке .dc.html узел атрибутом не передать — там actionsLast:
+     последний ребёнок и есть кнопки. Без них — как раньше, всё одной колонкой. */
   function BottomSheet(p) {
+    var kids = React.Children.toArray(p.children);
+    var actions = p.actions || (p.actionsLast && kids.length > 1 ? kids.pop() : null);
+    var body = React.useRef(null);
+    var st = React.useState(false), more = st[0], setMore = st[1];
+    var measure = function () {
+      var el = body.current;
+      if (el) setMore(el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+    };
+    React.useEffect(function () {
+      if (!actions || !body.current || !window.ResizeObserver) return undefined;
+      measure();
+      var ro = new ResizeObserver(measure);
+      ro.observe(body.current);
+      return function () { ro.disconnect(); };
+    }, [!!actions]);
+    var head = [
+      h('span', { key: 'grip', className: 'm-sheet-grip', 'aria-hidden': 'true' }),
+      h('div', { key: 'head', className: 'm-sheet-head' }, h('h2', null, p.title),
+        h(IconButton, { icon: 'close', label: 'Закрыть', onClick: p.onClose })),
+      p.text ? h('p', { key: 'text' }, p.text) : null];
     return h('div', { className: 'm-sheet-wrap' },
-      h('div', { className: 'm-sheet', role: 'dialog', 'aria-label': p.title },
-        h('span', { className: 'm-sheet-grip', 'aria-hidden': 'true' }),
-        h('div', { className: 'm-sheet-head' }, h('h2', null, p.title),
-          h(IconButton, { icon: 'close', label: 'Закрыть', onClick: p.onClose })),
-        p.text ? h('p', null, p.text) : null,
-        p.children, p.actions || null));
+      actions
+        ? h('div', { className: 'm-sheet m-sheet-fixed', role: 'dialog', 'aria-label': p.title }, head,
+            h('div', { className: cx('m-sheet-body', more && 'm-sheet-more'), ref: body, onScroll: measure }, kids),
+            h('div', { className: 'm-sheet-actions' }, actions))
+        : h('div', { className: 'm-sheet', role: 'dialog', 'aria-label': p.title }, head, p.children));
   }
   function Option(p) {
     return h('button', { type: 'button', role: 'radio', className: 'm-option', 'aria-checked': p.checked ? 'true' : 'false', onClick: p.onClick },
@@ -1403,6 +1442,9 @@ body{margin:0}
 .m-sheet-wrap{background:transparent;padding-top:0}
 .m-dialog-wrap{background:transparent}
 sc-if,sc-for{display:contents}
+.pstrip-clip{position:absolute;top:0;left:0;right:0;height:120px;overflow:hidden;pointer-events:none}
+.pstrip{transform:translateY(-110%);transition:transform 200ms cubic-bezier(.4,0,1,1)}
+.pstrip-on{transform:none;pointer-events:auto;transition:transform 250ms cubic-bezier(0,0,.2,1)}
 .tk-list{margin:0 -16px}
 .tk-list ul{list-style:none;margin:0;padding:0}
 .tk-head{padding:10px 16px 6px;font-size:14px;line-height:20px;font-weight:600;color:var(--primary)}
@@ -1475,7 +1517,8 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.IconButton" icon="search" label="Найти задание"></x-import>
 <x-import component-from-global-scope="Mml.IconButton" icon="map" label="Задания на карте" on-click="{{goMap}}"></x-import>
 </header>
-<div class="pscroll" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
+<div style="position: relative; flex-shrink: 0; height: 0; z-index: 1;"><sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}"><div class="pstrip-clip"><div class="{{stripCls}}"><x-import component-from-global-scope="Mml.NowCard" compact="{{yes}}" mode="{{nowMode}}" since="{{nowSince}}" num="{{now.num}}" address="{{now.address}}" on-click="{{openNow}}"></x-import></div></div></sc-if></div>
+<div class="pscroll" onScroll="{{tasksScroll}}" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
 <sc-if value="{{routeOpen}}" hint-placeholder-val="{{yes}}"><div style="padding: 16px 16px 16px; display: flex; flex-direction: column; gap: 16px;">
 <sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}">
 <section class="m-now" aria-label="{{nowLabel}}">
@@ -1776,8 +1819,9 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.BottomSheet.Option" title="{{c.title}}" text="{{c.text}}" checked="{{c.checked}}" on-click="{{c.pick}}"></x-import>
 </sc-for>
 <div style="display: flex; flex-direction: column; gap: 4px; padding-top: 4px;">
+<sc-if value="{{problemHint}}" hint-placeholder-val="{{no}}"><p style="font-size: 14px; line-height: 20px; padding-bottom: 4px;">Без причины доп. задание выполнится с заданием</p></sc-if>
 <x-import component-from-global-scope="Mml.Button" size="lg" variant="{{problemVariant}}" block="{{yes}}" on-click="{{confirmProblem}}">{{problemAction}}</x-import>
-<x-import component-from-global-scope="Mml.Button" variant="text" block="{{yes}}" on-click="{{closeSheet}}">Отмена</x-import>
+<x-import component-from-global-scope="Mml.Button" variant="text" block="{{yes}}" on-click="{{problemSecondaryClick}}">{{problemSecondary}}</x-import>
 </div>
 </x-import>
 </div>
@@ -1919,7 +1963,6 @@ var ADD_CAUSES = [
   { id: 'y', title: 'Аптека закрыта.', short: 'Аптека закрыта.', text: 'Персонала нет на месте' },
   { id: 'z', title: 'Товар продан', short: 'Товар продан', text: 'Клиент продал или оприходовал заказ' }
 ];
-var ADD_DONE = { id: 'done', title: 'Выполнено', text: 'Отметка «Не выполнено» снимется, засчитается с заданием' };
 var ADD_DESC = 'Забрать подписанный акт сверки у заведующей';
 // Доп. задания задания: у задания 5 — три (отдать, принять возврат, только описание), у остальных с доп. заданием — одно
 function addList(t) { if (!t.add) return []; return t.id === 5 ? [{ n: 1, kind: 'give' }, { n: 2, kind: 'ret' }, { n: 3, kind: 'desc' }] : [{ n: 1, kind: 'give' }]; }
@@ -1970,7 +2013,8 @@ class Component extends DCLogic {
   componentDidUpdate(prev, prevState) {
     if (prev.scenario !== this.props.scenario) this.setState(scenario(this.props.scenario || 'МЛ получен'));
     // Ушли с вкладки «МЛ» — при возврате список снова сверху, номер в шапке не нужен
-    else if (this.state.mlNumShown && (prevState.tab !== this.state.tab || prevState.screen !== this.state.screen)) this.setState({ mlNumShown: false });
+    // То же с полосой «Сейчас» на «Заданиях» (MML-86)
+    else if ((this.state.mlNumShown || this.state.stripOn) && (prevState.tab !== this.state.tab || prevState.screen !== this.state.screen)) this.setState({ mlNumShown: false, stripOn: false });
   }
   say(text) { var self = this; this.setState({ toast: text }); clearTimeout(this._t); this._t = setTimeout(function () { self.setState({ toast: null }); }, 2600); }
   renderVals() {
@@ -2073,7 +2117,7 @@ class Component extends DCLogic {
     var mapSel = g ? { address: g.address, pharmacy: g.pharmacy, kicker: g.tasks.length > 1 ? g.tasks.length + ' ' + plural(g.tasks.length, ['ЗАДАНИЕ', 'ЗАДАНИЯ', 'ЗАДАНИЙ']) + ' ПО АДРЕСУ' : 'ЗАДАНИЕ №' + g.tasks[0].num + ' · ' + STATE_TEXT[g.tasks[0].status].toUpperCase(), many: g.tasks.length > 1, one: g.tasks.length === 1, open: g.tasks[0].open, rows: g.tasks.map(function (t) { return { num: t.num, numClass: t.status === 'in-progress' ? 'm-numc m-numc-progress' : 'm-numc m-numc-idle', stateText: STATE_TEXT[t.status] + (t.status === 'in-progress' ? ' · с ' + t.at : ''), open: t.open }; }) } : null;
     var effTheme = s.themeMode === 'system' ? (this.props.theme ?? 'light') : s.themeMode;
     var isAddSheet = s.problemFor === 'add' || s.problemFor === 'addEdit' || s.problemFor === 'addAll';
-    var causesSrc = s.problemFor === 'addEdit' ? [ADD_DONE].concat(ADD_CAUSES) : isAddSheet ? ADD_CAUSES : CAUSES;
+    var causesSrc = isAddSheet ? ADD_CAUSES : CAUSES;
     var curCause = causesSrc.filter(function (c) { return c.id === s.cause; })[0] ? s.cause : (isAddSheet ? null : causesSrc[0].id);
     return {
       theme: effTheme, yes: true, no: false, none: null, goods: GOODS, goods2: GOODS2,
@@ -2085,6 +2129,15 @@ class Component extends DCLogic {
         var box = e.currentTarget, head = box.querySelector('.m-route');
         var hidden = !!head && head.getBoundingClientRect().bottom <= box.getBoundingClientRect().top;
         if (hidden !== !!self.state.mlNumShown) self.setState({ mlNumShown: hidden });
+      },
+      // Низ кнопки карточки «Сейчас» поднялся выше высоты полосы (64 px) → полоса выезжает из-под шапки и накрывает
+      // кнопку; уезжает, когда кнопка опустилась ниже больше чем на 8 px (MML-86). Карточки нет — полосы нет.
+      // setState только при смене
+      tasksScroll: function (e) {
+        var box = e.currentTarget, btn = box.querySelector('.m-now .m-btn');
+        var bottom = btn ? btn.getBoundingClientRect().bottom - box.getBoundingClientRect().top : null;
+        var on = bottom !== null && (self.state.stripOn ? bottom < 72 : bottom < 64);
+        if (on !== !!self.state.stripOn) self.setState({ stripOn: on });
       },
       isMap: s.screen === 'map', isTask: s.screen === 'task', isAdd: s.screen === 'add', isPlaces: s.screen === 'places', isOutbox: s.screen === 'outbox', showNav: s.screen === 'route',
       tab: s.tab,
@@ -2105,6 +2158,7 @@ class Component extends DCLogic {
       hasNow: !!next, now: next || {}, nowLabel: inWork ? 'Сейчас в работе' : 'Следующее задание',
       nowNumClass: inWork ? 'm-numc m-numc-progress' : 'm-numc m-numc-idle',
       nowKicker: inWork ? 'СЕЙЧАС В РАБОТЕ · С ' + inWork.at : 'СЛЕДУЮЩЕЕ',
+      nowMode: inWork ? 'in-progress' : 'next', nowSince: inWork ? inWork.at : null, stripCls: s.stripOn && next ? 'pstrip pstrip-on' : 'pstrip',
       nowMeta: next ? next.pharmacy + ' · открыто ' + next.close + (inWork ? '' : ' · ' + next.total + ' ' + plural(next.total, ['место', 'места', 'мест'])) : '',
       nowAction: next ? 'Открыть задание' : '',
       openNow: function () { if (next) next.open(); },
@@ -2167,19 +2221,27 @@ class Component extends DCLogic {
       finishOpen: addSrc.length > 1 ? 'Открыть доп. задания' : 'Открыть доп. задание',
       confirmFinish: function () { self.confirmFinish(cur); },
       cancelTrip: function () { var a = Object.assign({}, s.adds); delete a[cur.id]; self.setState({ st: setSt(cur.id, { status: 'not-started' }), sheet: null, marks: {}, reg: null, adds: a, log: push(cur.id, 'Отменил поездку') }); },
-      problemTitle: s.problemFor === 'add' ? 'Почему не выполнено?' : s.problemFor === 'addEdit' ? 'Доп. задание №' + s.addSel : s.problemFor === 'addAll' ? 'Почему не выполнены все?' : 'Почему не удалось доставить?',
-      problemText: s.problemFor === 'add' ? addSummary(s.addSel) : s.problemFor === 'addEdit' ? addSummary(s.addSel) + '. Сейчас: не выполнено' : s.problemFor === 'addAll' ? 'Задание №' + cur.num + ' · ' + addSrc.length + ' ' + plural(addSrc.length, ['доп. задание', 'доп. задания', 'доп. заданий']) + '. Причина встанет у всех' : 'Задание №' + cur.num + ' · ' + cur.address + '.' + (cur.add ? ' Доп. задания получат ту же причину.' : ''),
+      problemTitle: s.problemFor === 'add' || s.problemFor === 'addEdit' ? 'Почему не выполнено?' : s.problemFor === 'addAll' ? 'Почему не выполнены все?' : 'Почему не удалось доставить?',
+      problemText: s.problemFor === 'add' || s.problemFor === 'addEdit' ? addSummary(s.addSel) : s.problemFor === 'addAll' ? 'Задание №' + cur.num + ' · ' + addSrc.length + ' ' + plural(addSrc.length, ['доп. задание', 'доп. задания', 'доп. заданий']) + '. Причина встанет у всех' : 'Задание №' + cur.num + ' · ' + cur.address + '.' + (cur.add ? ' Доп. задания получат ту же причину.' : ''),
       problemAction: s.problemFor === 'addAll' ? 'Сохранить для всех' : isAddSheet ? 'Сохранить' : s.problemFor === 'finish' ? 'Отменить выполнение' : 'Пропустить задание', problemVariant: isAddSheet ? 'filled' : 'danger',
+      // Карандаш (MML-82): «Выполнено» — кнопкой вместо «Отмена», снимает отметку сразу
+      problemHint: s.problemFor === 'addEdit',
+      problemSecondary: s.problemFor === 'addEdit' ? 'Выполнено' : 'Отмена',
+      problemSecondaryClick: s.problemFor === 'addEdit' ? function () {
+        var a = Object.assign({}, s.adds), m = Object.assign({}, a[cur.id] || {});
+        delete m[s.addSel];
+        a[cur.id] = m;
+        self.setState({ adds: a, sheet: null, addMenu: false, log: push(cur.id, 'Доп. задание №' + s.addSel + ' · отметка снята') });
+      } : function () { self.setState({ sheet: null }); },
       causes: causesSrc.map(function (c) { return Object.assign({}, c, { checked: curCause === c.id, pick: function () { self.setState({ cause: c.id }); } }); }),
       confirmProblem: function () {
         if (isAddSheet) {
           if (!curCause) return;
           var a = Object.assign({}, s.adds), m = Object.assign({}, a[cur.id] || {});
           if (s.problemFor === 'addAll') addSrc.forEach(function (x) { m[x.n] = curCause; });
-          else if (curCause === 'done') delete m[s.addSel];
           else m[s.addSel] = curCause;
           a[cur.id] = m;
-          var what = s.problemFor === 'addAll' ? 'Доп. задания не выполнены' : curCause === 'done' ? 'Доп. задание №' + s.addSel + ' · отметка снята' : 'Доп. задание №' + s.addSel + ' не выполнено';
+          var what = s.problemFor === 'addAll' ? 'Доп. задания не выполнены' : 'Доп. задание №' + s.addSel + ' не выполнено';
           self.setState({ adds: a, sheet: null, addMenu: false, log: push(cur.id, what) });
           return;
         }
