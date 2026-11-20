@@ -630,7 +630,10 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-snack-text { flex: 1; min-width: 0; }
 .m-snack-text b { display: block; font-size: 16px; line-height: 22px; font-weight: 600; }
 .m-snack-text small { display: block; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
-.m-snack button { border: 0; background: transparent; color: var(--primary); font: inherit; font-weight: 700; min-height: var(--touch-min); padding: 0 12px; border-radius: var(--radius-md); cursor: pointer; }
+.m-snack-warning { background: var(--warning-container); border-color: color-mix(in srgb, var(--warning) 35%, transparent); }
+.m-snack-warning .m-snack-icon { background: var(--warning); color: var(--surface); }
+.m-snack-error { background: var(--error-container); border-color: color-mix(in srgb, var(--error) 40%, transparent); }
+.m-snack-error .m-snack-icon { background: var(--error); color: var(--on-error); }
 .m-snack-dock { position: relative; background: var(--surface); padding: var(--space-3) var(--space-4); }
 .m-snack-dock::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: var(--space-6); background: linear-gradient(to bottom, color-mix(in srgb, var(--surface) 0%, transparent), var(--surface)); pointer-events: none; }
 
@@ -1397,10 +1400,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- Snackbar ---------- */
   function Snackbar(p) {
-    return h('div', { className: 'm-snack', role: 'status' },
-      h('span', { className: 'm-snack-icon' }, h(Icon, { name: p.icon || 'check_circle' })),
-      h('span', { className: 'm-snack-text' }, p.title ? h('b', null, p.title) : null, p.title ? h('small', null, p.children) : p.children),
-      p.action ? h('button', { type: 'button', onClick: p.onAction }, p.action) : null);
+    var tone = p.tone === 'warning' || p.tone === 'error' ? p.tone : null;
+    return h('div', { className: cx('m-snack', tone && 'm-snack-' + tone), role: 'status' },
+      h('span', { className: 'm-snack-icon' }, h(Icon, { name: p.icon || (tone || 'info') })),
+      h('span', { className: 'm-snack-text' }, p.title ? h('b', null, p.title) : null, p.title ? h('small', null, p.children) : p.children));
   }
 
   /* ---------- ScannerFrame ---------- */
@@ -1808,7 +1811,7 @@ sc-if,sc-for{display:contents}
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
 <x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Как считаются места">
 <ul class="pl-help"><sc-for list="{{plHelp}}" as="h" hint-placeholder-count="5"><li>{{h}}</li></sc-for></ul>
-<div class="pl-help-scan"><span class="m-ic" aria-hidden="true">barcode_scanner</span><span>Такой значок у номера — место отсканировано. Это только для вас, на сервер не уходит.</span></div>
+<div class="pl-help-scan"><span class="m-ic" aria-hidden="true">barcode_scanner</span><span>Такой значок у номера — место отсканировано. Его видите только вы.</span></div>
 <x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Понятно</x-import>
 </x-import>
 </div>
