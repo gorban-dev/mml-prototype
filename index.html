@@ -1553,7 +1553,7 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.KeyValueTable" rows="{{itog}}"></x-import>
 </sc-if>
 <sc-if value="{{routeOpen}}" hint-placeholder-val="{{yes}}">
-<x-import component-from-global-scope="Mml.InfoPanel" icon="auto_mode" title="Автоподтверждение включено" text="3 минуты в 50 м от аптеки — задание закроется само." note="Ошибку можно отменить, с причиной. Не сработает, если рядом 2 и больше аптек из маршрута."></x-import>
+<x-import component-from-global-scope="Mml.InfoPanel" icon="auto_mode" title="Автоподтверждение включено" text="3 минуты в 50 м от аптеки — задание и его доп. задания закроются сами." note="Не сработает, если рядом 2 и больше аптек из маршрута или в работе другое задание. Закрылось по ошибке — отмените выполнение с причиной «Некорректное автоподтверждение». Отменится только это задание вместе с его доп. заданиями."></x-import>
 </sc-if>
 <div class="m-section" style="padding: 12px 0 0;"><span>СОСТАВ МЕСТ</span></div>
 <x-import component-from-global-scope="Mml.KeyValueTable" rows="{{placesRows}}"></x-import>
