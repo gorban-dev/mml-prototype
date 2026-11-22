@@ -425,6 +425,7 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 /* ---------- StatusBadge ---------- */
 .m-status { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 4px 8px 4px 6px; box-sizing: border-box; border-radius: var(--radius-xs); font-size: 13px; line-height: 16px; font-weight: 600; }
 .m-status-neutral { background: var(--surface-container-highest); color: var(--on-surface-variant); }
+.m-status-idle { background: var(--outline-variant); color: var(--on-surface-variant); }
 .m-status-progress { background: var(--primary-container); color: var(--on-primary-container); }
 .m-status-done { background: var(--success-container); color: var(--success); }
 .m-status-error { background: var(--error-container); color: var(--error); }
@@ -1134,7 +1135,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ---------- StatusBadge ---------- */
   var STATUS = {
-    'not-started': ['neutral', 'radio_button_unchecked', 'Не начато'],
+    // Задание не начато — фон outline-variant: surface-container-highest в тёмной теме темнее фона экрана (MML-130)
+    'not-started': ['idle', 'schedule', 'Не начато'],
     'in-progress': ['progress', 'local_shipping', 'В работе'],
     'done': ['done', 'check_circle', 'Выполнено'],
     'done-auto': ['done', 'auto_mode', 'Подтверждено автоматически'],
