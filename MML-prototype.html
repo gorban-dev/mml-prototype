@@ -580,8 +580,9 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 
 /* ---------- BottomSheet ---------- */
 .m-sheet-wrap { position: relative; background: var(--scrim); padding-top: 72px; }
-.m-sheet { background: var(--surface-container); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 10px var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); box-shadow: var(--shadow-sheet); }
-.m-sheet-grip { width: 36px; height: 4px; border-radius: var(--radius-full); background: var(--outline); align-self: center; }
+.m-sheet { background: var(--surface-container); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 22px var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); box-shadow: var(--shadow-sheet); }
+/* Ручка как в приложении — Material 3 DragHandle: 22 dp над полоской и 22 под ней (12 gap + 10), MML-132 */
+.m-sheet-grip { width: 36px; height: 4px; border-radius: var(--radius-full); background: var(--outline); align-self: center; margin-bottom: 10px; }
 .m-sheet-head { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0 -8px 0 0; }
 .m-sheet-head .m-iconbtn { flex: none; margin-top: -6px; }
 .m-sheet h2 { flex: 1 1 auto; margin: 6px 0 0; font-size: 20px; line-height: 26px; font-weight: 600; text-wrap: balance; }
