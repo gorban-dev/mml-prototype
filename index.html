@@ -2221,8 +2221,14 @@ class Component extends DCLogic {
       nowKicker: inWork ? 'СЕЙЧАС В РАБОТЕ · С ' + inWork.at : 'СЛЕДУЮЩЕЕ',
       nowMode: inWork ? 'in-progress' : 'next', nowSince: inWork ? inWork.at : null, stripCls: s.stripOn && next ? 'pstrip pstrip-on' : 'pstrip',
       nowMeta: next ? next.pharmacy + ' · открыто ' + next.close + (inWork ? '' : ' · ' + next.total + ' ' + plural(next.total, ['место', 'места', 'мест'])) : '',
-      nowAction: next ? 'Открыть задание' : '',
-      openNow: function () { if (next) next.open(); },
+      // «Следующее» — «Поехали»: берёт в работу и сразу открывает задание; в работе — «Открыть задание» (MML-127)
+      nowAction: !next ? '' : inWork ? 'Открыть задание' : 'Поехали',
+      openNow: function () {
+        if (!next) return;
+        if (inWork) { next.open(); return; }
+        self.setState({ st: setSt(next.id, { status: 'in-progress', at: '14:4' + (s.log.length % 10) }), log: push(next.id, 'Взял в работу'),
+          curId: next.id, screen: 'task', sheet: null, from: s.screen, reg: null, marks: {} });
+      },
       upcoming: upcomingList, upcomingCount: upcomingList.length, hasUpcoming: !routeDone && upcomingList.length > 0,
       skippedList: skippedList, hasSkipped: !routeDone && skippedList.length > 0,
       doneList: doneList, hasDone: !routeDone && doneList.length > 0,  doneOpen: s.doneOpen, doneIcon: s.doneOpen ? 'expand_less' : 'expand_more',
