@@ -568,14 +568,14 @@ body { margin: 0; font-family: var(--font-sans); background: var(--surface); col
 .m-field { display: flex; flex-direction: column; gap: 4px; }
 .m-field label { padding: 0 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--on-surface); }
 .m-field-box { display: flex; align-items: center; gap: 2px; min-height: 56px; padding: 0 var(--space-4); background: var(--surface-container); border: 1px solid var(--outline); border-radius: var(--radius-sm); }
-.m-field-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.m-field-box:focus-within, .m-field-focused .m-field-box { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
 .m-field-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--on-surface); font: inherit; font-size: 18px; line-height: 24px; font-variant-numeric: tabular-nums; }
 .m-field-box textarea { flex: 1; min-width: 0; padding: 15px 0; border: 0; outline: 0; resize: none; field-sizing: content; background: transparent; color: var(--on-surface); font: inherit; font-size: 18px; line-height: 24px; }
 .m-field-box .pre { font-size: 18px; color: var(--on-surface-variant); }
 .m-field-help { padding: 0 16px; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); margin: 0; }
 .m-field-error .m-field-box { border-color: var(--error); box-shadow: 0 0 0 1px var(--error); }
 .m-field-error .m-field-help { color: var(--error); }
-.m-field-error .m-field-box > .m-ic { color: var(--error); }
+.m-field-clear { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; margin-right: -12px; padding: 0; border: 0; border-radius: var(--radius-full); background: none; color: var(--on-surface-variant); cursor: pointer; }
 .m-field-reserve .m-field-help { min-height: 40px; }
 
 /* ---------- BottomSheet ---------- */
@@ -1329,15 +1329,31 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ---------- TextField ---------- */
+  // «Очистить» (×, 48 dp) справа в поле, пока поле в фокусе и в нём есть текст — как clear_text в Material Components
+  // (ClearTextEndIconDelegate: hasFocus && hasText). Стирает всё сразу, префикс «+7» остаётся. Иконки ошибки в поле нет —
+  // ошибку показывают рамка и текст под полем; здесь отходим от Material, где иконка ошибки прячет × (MML-122).
+  // focused — макет поля во время ввода: рамка фокуса и ×, на холсте поле само фокус не получает
   function TextField(p) {
     var id = p.id || 'f-' + Math.random().toString(36).slice(2, 8);
-    return h('div', { className: cx('m-field', p.error && 'm-field-error', p.reserve && 'm-field-reserve') },
+    var st = React.useState(p.value || ''), value = st[0], setValue = st[1];
+    var fs = React.useState(!!p.focused), focus = fs[0], setFocus = fs[1];
+    var input = {
+      id: id, value: value, placeholder: p.placeholder, 'aria-invalid': p.error ? 'true' : undefined,
+      onChange: function (e) { setValue(e.target.value); },
+      onFocus: function () { setFocus(true); },
+      onBlur: function () { setFocus(!!p.focused); }
+    };
+    var clear = focus && value
+      ? h('button', { type: 'button', className: 'm-field-clear', 'aria-label': 'Очистить',
+          onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { setValue(''); } }, h(Icon, { name: 'close' }))
+      : null;
+    return h('div', { className: cx('m-field', p.error && 'm-field-error', p.reserve && 'm-field-reserve', p.focused && 'm-field-focused') },
       h('label', { htmlFor: id }, p.label),
       h('div', { className: 'm-field-box' }, p.prefix ? h('span', { className: 'pre' }, p.prefix) : null,
         p.lines > 1
-          ? h('textarea', { id: id, defaultValue: p.value, placeholder: p.placeholder, rows: 1, style: { maxHeight: p.lines * 24 + 'px' }, 'aria-invalid': p.error ? 'true' : undefined })
-          : h('input', { id: id, defaultValue: p.value, placeholder: p.placeholder, inputMode: p.inputMode, 'aria-invalid': p.error ? 'true' : undefined }),
-        p.trailing || (p.error ? h(Icon, { name: 'error', fill: true }) : null)),
+          ? h('textarea', Object.assign({ rows: 1, style: { maxHeight: p.lines * 24 + 'px' } }, input))
+          : h('input', Object.assign({ inputMode: p.inputMode }, input)),
+        p.trailing || clear),
       p.error ? h('p', { className: 'm-field-help', role: 'alert' }, p.error)
         : p.helper ? h('p', { className: 'm-field-help' }, p.helper)
         : p.reserve ? h('p', { className: 'm-field-help', 'aria-hidden': 'true' }) : null);
