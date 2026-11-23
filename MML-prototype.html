@@ -1570,13 +1570,15 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.IconButton" icon="search" label="Найти задание"></x-import>
 <x-import component-from-global-scope="Mml.IconButton" icon="map" label="Задания на карте" on-click="{{goMap}}"></x-import>
 </header>
-<div style="position: relative; flex-shrink: 0; height: 0; z-index: 1;"><sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}"><div class="pstrip-clip"><div class="{{stripCls}}"><x-import component-from-global-scope="Mml.NowCard" compact="{{yes}}" mode="{{nowMode}}" since="{{nowSince}}" num="{{now.num}}" address="{{now.address}}" on-click="{{openNow}}"></x-import></div></div></sc-if></div>
+<div style="position: relative; flex-shrink: 0; height: 0; z-index: 1;"><sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}"><div class="pstrip-clip"><div class="{{stripCls}}"><x-import component-from-global-scope="Mml.NowCard" compact="{{yes}}" mode="{{nowMode}}" since="{{nowSince}}" num="{{now.num}}" address="{{now.address}}" on-click="{{viewNow}}"></x-import></div></div></sc-if></div>
 <div class="pscroll" onScroll="{{tasksScroll}}" style="flex-grow: 1; overflow-y: auto; min-height: 0;"><div style="display: flex; flex-direction: column;">
 <sc-if value="{{routeOpen}}" hint-placeholder-val="{{yes}}"><div style="padding: 16px 16px 16px; display: flex; flex-direction: column; gap: 16px;">
 <sc-if value="{{hasNow}}" hint-placeholder-val="{{yes}}">
 <section class="m-now" aria-label="{{nowLabel}}">
+<div onClick="{{viewNow}}" style="display: contents; cursor: pointer;">
 <div class="m-now-head"><span class="{{nowNumClass}}">{{now.num}}</span><span class="m-now-kicker">{{nowKicker}}</span></div>
 <div><h3>{{now.address}}</h3><p>{{nowMeta}}</p></div>
+</div>
 <x-import component-from-global-scope="Mml.Button" block="{{yes}}" on-click="{{openNow}}">{{nowAction}}</x-import>
 </section>
 </sc-if>
@@ -1621,22 +1623,29 @@ sc-if,sc-for{display:contents}
 <x-import component-from-global-scope="Mml.MapMarker" cluster="{{m.cluster}}" nums="{{m.nums}}" num="{{m.num}}" state="{{m.state}}" x="{{m.x}}" y="{{m.y}}" selected="{{m.sel}}" on-click="{{m.pick}}"></x-import>
 </sc-for>
 <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);"><x-import component-from-global-scope="Mml.IconButton" icon="my_location" label="Моё местоположение" variant="raised"></x-import></div>
-<div style="position: absolute; left: 12px; right: 12px; top: calc(50% + 36px); bottom: 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; pointer-events: none;">
-<sc-if value="{{hasMapSel}}" hint-placeholder-val="{{yes}}">
-<div style="background: var(--surface-container); border-radius: var(--radius-md); box-shadow: var(--shadow-float); padding: 14px 16px; max-height: 100%; box-sizing: border-box; overflow-y: auto; pointer-events: auto;">
-<div style="display: flex; flex-direction: column; gap: 10px;">
+<div style="position: absolute; left: 0; right: 0; bottom: 12px; display: flex; flex-direction: column; gap: 12px; pointer-events: none;">
+<sc-if value="{{mapSel.one}}" hint-placeholder-val="{{no}}">
+<div style="margin: 0 12px; background: var(--surface-container); border-radius: var(--radius-md); box-shadow: var(--shadow-float); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto;">
 <span class="label-md" style="color: var(--on-surface-variant);">{{mapSel.kicker}}</span>
 <b class="title-md">{{mapSel.address}}</b>
 <span class="body-md" style="color: var(--on-surface-variant);">{{mapSel.pharmacy}}</span>
-<sc-if value="{{mapSel.many}}" hint-placeholder-val="{{yes}}"><div><sc-for list="{{mapSel.rows}}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{r.open}}" class="m-kv-row m-kv-link" style="width: 100%; box-sizing: border-box; border: 0; border-top: 1px solid var(--outline-variant); padding-left: 0; padding-right: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;"><span class="{{r.numClass}}" aria-hidden="true">{{r.num}}</span><span class="m-kv-label">Задание №{{r.num}}<small>{{r.stateText}}</small></span><span class="m-ic" aria-hidden="true">chevron_right</span></button></sc-for></div>
-<div style="display: flex; flex-direction: column; gap: 8px;"><x-import component-from-global-scope="Mml.Button" variant="outlined" block="{{yes}}">В навигатор</x-import></div>
-</sc-if>
-<sc-if value="{{mapSel.one}}" hint-placeholder-val="{{no}}"><div class="m-actionbar-row"><x-import component-from-global-scope="Mml.Button" variant="outlined">В навигатор</x-import><x-import component-from-global-scope="Mml.Button" on-click="{{mapSel.open}}">Открыть задание</x-import></div></sc-if>
+<div class="m-actionbar-row"><x-import component-from-global-scope="Mml.Button" variant="outlined">В навигатор</x-import><x-import component-from-global-scope="Mml.Button" on-click="{{mapSel.open}}">Открыть задание</x-import></div>
 </div>
+</sc-if>
+<sc-if value="{{mapSel.many}}" hint-placeholder-val="{{yes}}">
+<div style="display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 24px; padding: 0 24px 0; scrollbar-width: none; pointer-events: auto;">
+<sc-for list="{{mapSel.rows}}" as="r" hint-placeholder-count="3">
+<div style="flex: none; width: calc(100% - 48px); scroll-snap-align: start; background: var(--surface-container); border-radius: var(--radius-md); box-shadow: var(--shadow-float); padding: 14px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; justify-content: space-between; gap: 8px;"><span class="label-md" style="color: var(--on-surface-variant);">{{r.kicker}}</span><span class="label-md" style="color: var(--on-surface-variant); white-space: nowrap;">{{r.counter}}</span></div>
+<b class="title-md">{{mapSel.address}}</b>
+<span class="body-md" style="color: var(--on-surface-variant);">{{mapSel.pharmacy}}</span>
+<div class="m-actionbar-row"><x-import component-from-global-scope="Mml.Button" variant="outlined">В навигатор</x-import><x-import component-from-global-scope="Mml.Button" on-click="{{r.open}}">Открыть задание</x-import></div>
+</div>
+</sc-for>
 </div>
 </sc-if>
 <sc-if value="{{noMapSel}}" hint-placeholder-val="{{no}}">
-<div style="background: var(--surface-container); border-radius: var(--radius-md); box-shadow: var(--shadow-float); padding: 10px 14px; font-size: 14px; line-height: 20px; color: var(--on-surface-variant);">Нажмите на метку, чтобы открыть задание.</div>
+<div style="margin: 0 12px; background: var(--surface-container); border-radius: var(--radius-md); box-shadow: var(--shadow-float); padding: 10px 14px; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); pointer-events: auto;">Нажмите на метку, чтобы открыть задание.</div>
 </sc-if>
 </div>
 </div>
@@ -1926,14 +1935,7 @@ sc-if,sc-for{display:contents}
 
 <sc-if value="{{sheetUpdated}}" hint-placeholder-val="{{no}}">
 <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--scrim); display: flex; flex-direction: column; justify-content: flex-end;">
-<x-import component-from-global-scope="Mml.BottomSheet" on-close="{{closeSheet}}" title="Маршрутный лист обновился" text="3 изменения">
-<div style="display: flex; flex-direction: column; border-top: 1px solid var(--outline-variant);">
-<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-warning" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">schedule</span>Изменено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№9 · п. Улу-Юл, ООО *Э-ЛЕС*</b><span class="body-md">Адрес: <s style="color: var(--on-surface-variant);">ул. Советская, д.23</s> → <b>ул. Советская, д.25</b></span></div></div>
-<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-warning" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">inventory_2</span>Изменено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№11 · Томск, ООО *Э-Лес*</b><span class="body-md">Мест: <s style="color: var(--on-surface-variant);">4</s> → <b>6</b></span></div></div>
-<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-done" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">add</span>Добавлено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№18 · Бердск, ООО *Фарма-Плюс*</b><span class="body-md" style="color: var(--on-surface-variant);">ул. Ленина, д.12 · 3 места</span></div></div>
-</div>
-<x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Понятно</x-import>
-</x-import>
+<div class="m-sheet-wrap" style="color: var(--on-surface);"><div class="m-sheet m-sheet-fixed" role="dialog" aria-label="Маршрутный лист обновился"><span class="m-sheet-grip" aria-hidden="true"></span><div class="m-sheet-head"><h2>Маршрутный лист обновился</h2><x-import component-from-global-scope="Mml.IconButton" icon="close" label="Закрыть" on-click="{{closeSheet}}"></x-import></div><p>8 изменений</p><div class="m-sheet-body m-sheet-more"><div class="m-section" style="padding: 16px 0 8px;"><span>МАРШРУТНЫЙ ЛИСТ</span></div><div style="display: flex; flex-direction: column; border-top: 1px solid var(--outline-variant);"><div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="body-md">Номера заданий изменились</span><span class="body-md">Дата: <s style="color: var(--on-surface-variant);">20 ноября</s> → <b>21 ноября</b></span><span class="body-md">Термоконтейнер 2000123: добавлен</span></div></div><div class="m-section" style="padding: 16px 0 8px;"><span>УДАЛЕНО · 2</span></div><div style="display: flex; flex-direction: column; border-top: 1px solid var(--outline-variant);"><div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-error" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">remove</span>Удалено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№3 · п. Улу-Юл, ООО *Э-ЛЕС*</b><span class="body-md" style="color: var(--on-surface-variant);">п. Улу-Юл, ул. Советская, д.23</span></div></div><div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-error" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">remove</span>Удалено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№7 · п. Сайга, ООО *КСП*</b><span class="body-md" style="color: var(--on-surface-variant);">п. Сайга, ул. Молодогвардейская, д.5</span></div></div></div><div class="m-section" style="padding: 16px 0 8px;"><span>ДОБАВЛЕНО · 1</span></div><div style="display: flex; flex-direction: column; border-top: 1px solid var(--outline-variant);"><div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-done" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">add</span>Добавлено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№11 · Бердск, ООО *Фарма-Плюс*</b><span class="body-md" style="color: var(--on-surface-variant);">ул. Ленина, д.12 · 3 места</span></div></div></div><div class="m-section" style="padding: 16px 0 8px;"><span>ИЗМЕНЕНО · 2</span></div><div style="display: flex; flex-direction: column; border-top: 1px solid var(--outline-variant);"><div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-warning" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">edit</span>Изменено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№4 · рп Белый Яр, ООО *Стандарт*</b><span class="body-md">Номер: <s style="color: var(--on-surface-variant);">5</s> → <b>4</b></span><span class="body-md">Адрес: <s style="color: var(--on-surface-variant);">ул. Гагарина, д.50 стр. 2</s> → <b>ул. Гагарина, д.52</b></span><span class="body-md">Обычные: <s style="color: var(--on-surface-variant);">14</s> → <b>12</b></span><span class="body-md">Аптека.ру: <s style="color: var(--on-surface-variant);">8</s> → <b>6</b></span><span class="body-md">Время работы: <s style="color: var(--on-surface-variant);">9:00–18:00</s> → <b>10:00–19:00</b></span><span class="body-md">Телефон: <s style="color: var(--on-surface-variant);">+7 953 910-99-23</s> → <b>+7 953 910-99-24</b></span><span class="body-md">Изменено место на карте</span><span class="body-md">Доп. задание · возврат: добавлено</span></div></div><div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--outline-variant);"><span class="m-status m-status-warning" style="min-width: 104px; justify-content: flex-start;"><span class="m-ic m-ic-sm" aria-hidden="true">edit</span>Изменено</span><div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><b class="body-lg" style="font-weight: 600;">№6 · рп Белый Яр, ООО *Фарма*</b><span class="body-md">Комментарий изменён</span><span class="body-md">Изменены заказы Аптека.ру</span><span class="body-md">Доп. задание · возврат: удалено</span></div></div></div></div><div class="m-sheet-actions"><x-import component-from-global-scope="Mml.Button" size="lg" block="{{yes}}" on-click="{{closeSheet}}">Понятно</x-import></div></div></div>
 </div>
 </sc-if>
 
@@ -2040,7 +2042,7 @@ var PART_CAUSES = [
 var THEMES = [
   { id: 'system', title: 'Как в системе', text: 'Светлая или тёмная — как настроен телефон' },
   { id: 'light', title: 'Светлая', text: 'Лучше читается на солнце' },
-  { id: 'dark', title: 'Тёмная', text: 'Меньше слепит вечером в кабине' }
+  { id: 'dark', title: 'Тёмная', text: 'Меньше слепит вечером' }
 ];
 var GOODS = [{ name: 'Нурофен таб. п/о 200мг №20', series: 'A12345', qty: 2, price: 245 }, { name: 'Витамин D3 капли 10мл', series: 'B77001', qty: 1, price: 410.5 }];
 var GOODS2 = [{ name: 'Аква Марис спрей 30мл', series: 'C55210', qty: 1, price: 389 }];
@@ -2175,7 +2177,9 @@ class Component extends DCLogic {
       return { cluster: g.tasks.length > 1, nums: g.tasks.map(function (t) { return t.num; }), num: first.num, state: first.status === 'in-progress' ? 'in-progress' : 'not-started', x: xy[0], y: xy[1], sel: s.mapSel === g.address, pick: function () { self.setState({ mapSel: g.address }); } };
     });
     var g = groups.filter(function (x) { return x.address === s.mapSel; })[0];
-    var mapSel = g ? { address: g.address, pharmacy: g.pharmacy, kicker: g.tasks.length > 1 ? g.tasks.length + ' ' + plural(g.tasks.length, ['ЗАДАНИЕ', 'ЗАДАНИЯ', 'ЗАДАНИЙ']) + ' ПО АДРЕСУ' : 'ЗАДАНИЕ №' + g.tasks[0].num + ' · ' + STATE_TEXT[g.tasks[0].status].toUpperCase(), many: g.tasks.length > 1, one: g.tasks.length === 1, open: g.tasks[0].open, rows: g.tasks.map(function (t) { return { num: t.num, numClass: t.status === 'in-progress' ? 'm-numc m-numc-progress' : 'm-numc m-numc-idle', stateText: STATE_TEXT[t.status] + (t.status === 'in-progress' ? ' · с ' + t.at : ''), open: t.open }; }) } : null;
+    // MML-149: «ЗАДАНИЕ №N · статус» — у карточки одного задания и у каждой карточки метки с несколькими
+    function mapKicker(t) { return 'ЗАДАНИЕ №' + t.num + ' · ' + (STATE_TEXT[t.status] + (t.status === 'in-progress' ? ' · с ' + t.at : '')).toUpperCase(); }
+    var mapSel = g ? { address: g.address, pharmacy: g.pharmacy, kicker: mapKicker(g.tasks[0]), many: g.tasks.length > 1, one: g.tasks.length === 1, open: g.tasks[0].open, rows: g.tasks.map(function (t, i) { return { kicker: mapKicker(t), counter: (i + 1) + ' из ' + g.tasks.length, open: t.open }; }) } : null;
     var effTheme = s.themeMode === 'system' ? (this.props.theme ?? 'light') : s.themeMode;
     var isAddSheet = s.problemFor === 'add' || s.problemFor === 'addEdit' || s.problemFor === 'addAll';
     var causesSrc = isAddSheet ? ADD_CAUSES : CAUSES;
@@ -2223,6 +2227,8 @@ class Component extends DCLogic {
       nowMeta: next ? next.pharmacy + ' · открыто ' + next.close + (inWork ? '' : ' · ' + next.total + ' ' + plural(next.total, ['место', 'места', 'мест'])) : '',
       // «Следующее» — «Поехали»: берёт в работу и сразу открывает задание; в работе — «Открыть задание» (MML-127)
       nowAction: !next ? '' : inWork ? 'Открыть задание' : 'Поехали',
+      // Тап по карточке и полоса — открыть без старта: посмотреть следующее задание (MML-143)
+      viewNow: function () { if (next) next.open(); },
       openNow: function () {
         if (!next) return;
         if (inWork) { next.open(); return; }
